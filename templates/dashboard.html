@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Bench Logger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<h2>Test Bench Test Logger</h2>
+
+<div class="resume-banner">
+    Previous session restored
+
+    Session:
+    #{{ session_id }}
+</div>
+
+<div id="factory-floor">
+<div id="inspectionModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2 id="modalBenchTitle">Bench</h2>
+
+        <h3>Ground Bond</h3>
+        <div class="button-group">
+            <button type="button" id="gbPass">PASS</button>
+            <button type="button" id="gbFail">FAIL</button>
+        </div>
+
+        <h3>Insulation Resistance</h3>
+        <div class="button-group">
+            <button type="button" id="irPass">PASS</button>
+            <button type="button" id="irFail">FAIL</button>
+        </div>
+
+        <div id="weeklySection">
+            <h3>Weekly Check</h3>
+            <div class="button-group">
+                <button type="button" id="weeklyPass">PASS</button>
+                <button type="button" id="weeklyFail">FAIL</button>
+            </div>
+        </div>
+
+        <div id="failureSection" style="display:none;">
+
+            <h3>Failure Reason</h3>
+
+            <select id="failReason">
+                <option value="">Select Reason</option>
+                <option>Failed GB</option>
+                <option>Failed IR</option>
+                <option>Failed Weekly</option>
+                <option>Bench Damaged</option>
+                <option>Other</option>
+            </select>
+
+        </div>
+
+        <h3>Comments</h3>
+
+        <textarea
+            id="comments"
+            rows="4"
+            placeholder="Optional comments..."
+        ></textarea>
+
+        <div class="modal-buttons">
+            <button id="saveInspection">
+                Save Inspection
+            </button>
+
+            <button id="cancelInspection">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+{% for bench in benches %}
+    <button
+        class="bench
+        {% if result == 'PASS' %}
+            pass
+        {% elif result == 'FAIL' %}
+            fail
+        {% else %}
+            pending
+        {% endif %}"
+        data-id="{{ bench.id }}"
+    >
+        {{ bench.name }}
+    </button>
+{% endfor %}
+
+<button id="completeSession">Complete Session</button>
+
+</div>
+<script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
+
+<script src="{{ url_for('static', filename='js/floorplan.js') }}"></script>
+
+</body>
+</html>
+
+<!-- 
+add progression statistics 
+
+save it across the board for the whole day,  so repeated refreshes and logins dont refresh the page
+
+live update if another session is in progress
+
+warn second user if a session is in progress
+
+build a map of the actual factory floor not just a template map
+-->
