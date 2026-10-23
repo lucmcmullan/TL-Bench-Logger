@@ -198,11 +198,9 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
     modal.style.display = "none";
 
     currentBench = null
-    
-    refreshLocks()
-    refreshBenchStatuses()
 });
 
+/*
 async function refreshBenchStatuses() {
     try{
         const response = await fetch("/inspection-status")
@@ -228,9 +226,7 @@ async function refreshBenchStatuses() {
     }
 }
 
-async function sendHeartbeat() {
-    await fetch("/heartbeat", { method: "POST" });
-}
+
 
 async function refreshLocks() {
 
@@ -267,15 +263,13 @@ async function refreshLocks() {
     });
 
 }
+*/
 
-refreshBenchStatuses()
+async function sendHeartbeat() {
+    await fetch("/heartbeat", { method: "POST" });
+}
+
 sendHeartbeat()
-refreshLocks();
 
 setInterval(sendHeartbeat, 30000);
 
-setInterval(() => {
-    refreshBenchStatuses();
-    refreshLocks();
-
-}, 5000);

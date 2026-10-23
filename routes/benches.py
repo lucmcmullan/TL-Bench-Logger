@@ -9,6 +9,8 @@ from database.db import db
 from datetime import date, datetime, timedelta
 from database.models import Inspection, InspectionSession, BenchLock
 
+from socketio_instance import socketio
+
 bench_bp = Blueprint("bench", __name__)
 
 @bench_bp.route("/lock-bench", methods=["POST"])
@@ -28,6 +30,8 @@ def lock_bench():
 
     db.session.add(lock)
     db.session.commit()
+    
+    socketio.emit("lock_changed", {"bench_id": data["bench_id"], "locked": True})
 
     return jsonify({ "success": True })
 
@@ -47,6 +51,8 @@ def unlock_bench():
         db.session.delete(lock)
         db.session.commit()
 
+        socketio.emit("lock_changed", {"bench_id": data["bench_id"], "locked": False})
+        
         return jsonify({ "success": True})
 
     return jsonify({ "success": False, "message": "No lock found"})
@@ -96,6 +102,8 @@ def inspect_bench():
         db.session.delete(lock)
 
     db.session.commit()
+
+    socketio.emit("bench_updated", {"bench_id": data["bench_id"], "result": overall})
 
     return jsonify({ "success": True, "overall": overall })
 

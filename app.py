@@ -1,4 +1,8 @@
+#import eventlet
+#eventlet.monkey_patch()
+
 from flask import Flask
+from socketio_instance import socketio
 
 from config import Config
 
@@ -8,10 +12,12 @@ from routes.auth import auth_bp
 from routes.session import session_bp
 from routes.benches import bench_bp
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+socketio.init_app(app, cors_allowed_origins="*")
 
 with app.app_context():
     db.create_all
@@ -21,7 +27,7 @@ app.register_blueprint(session_bp)
 app.register_blueprint(bench_bp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
     
 # re-seed database after changing model:
 # delete app.db
