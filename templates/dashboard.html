@@ -55,7 +55,12 @@
                 style="grid-column: span {{ bench.span }}"
             >
 
-                {{ bench.label }}
+                TB{{ bench.label }}<br>
+                {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
+                    Cell {{ bench.cell }}
+                {% else %}
+                    {{ bench.cell }}
+                {% endif %}
 
             </button>
 
