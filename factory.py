@@ -23,8 +23,8 @@ FACTORY_LAYOUT = [
         {"id": 18, "label": "TB90", "span": 1}, None, 
         {"id": 19, "label": "TB25", "span": 1}, 
         {"id": 20, "label": "TB48", "span": 1}, 
-        {"id": 21, "label": "50", "span": 1}, 
-        {"id": 22, "label": "53", "span": 1}
+        {"id": 21, "label": "TB50", "span": 1}, 
+        {"id": 22, "label": "TB53", "span": 1}
         ],
     [
         {"id": 23, "label": "TB45", "span": 1}, 

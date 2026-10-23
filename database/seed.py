@@ -2,15 +2,19 @@ from app import app
 from database.db import db
 from database.models import Bench
 
+from factory import FACTORY_LAYOUT
+
 with app.app_context(): # change to actual benches, not just a placeholder
     db.drop_all()
     db.create_all()
     
-    for i in range(1, 51):
-        bench = Bench(name=f"B{i:02d}")
-        
-        db.session.add(bench)
-        
+    for row in FACTORY_LAYOUT:
+        for bench in row:
+            if bench is None:
+                continue
+
+            db.session.add(Bench(id=bench["id"], name=bench["label"]))
+
     db.session.commit()
     
     print("test benches loaded")
