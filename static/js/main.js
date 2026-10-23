@@ -1,5 +1,14 @@
 let currentBench = null;
 
+const NO_WEEKLY = [
+    "TB01",
+    "TB72"
+]
+
+const NO_GROUNDBOND = [
+    "TB72"
+]
+
 let inspectionData = {
     groundBond: null,
     insulation: null,
@@ -27,8 +36,7 @@ document.querySelectorAll(".bench").forEach(button => {
 
         currentBench = button;
 
-        inspectionData = { groundBond: null, insulation: null, weekly: null
-        };
+        inspectionData = { groundBond: null, insulation: null, weekly: null};
 
         document.getElementById("failReason").value = "";
         document.getElementById("comments").value = "";
@@ -40,6 +48,14 @@ document.querySelectorAll(".bench").forEach(button => {
         });
 
         document.getElementById("modalBenchTitle").innerText = button.innerText;
+        
+        const benchName = button.innerText.trim()
+        
+        const groundBondSection = document.getElementById("groundBondSection")
+        const weeklySection = document.getElementById("weeklySection")
+
+        groundBondSection.style.display = NO_GROUNDBOND.includes(benchName) ? "none" : "block"
+        weeklySection.style.display = NO_WEEKLY.includes(benchName) ? "none" : "block"
 
         if (IS_FRIDAY) {
             document.getElementById("weeklySection").style.display = "block";
@@ -61,42 +77,27 @@ function setResult(type, result) {
     if (type === "groundBond") {
         passButton = document.getElementById("gbPass");
         failButton = document.getElementById("gbFail");
-    }
-    else if (type === "insulation") {
+    } else if (type === "insulation") {
         passButton = document.getElementById("irPass");
         failButton = document.getElementById("irFail");
-    }
-    else if (type === "weekly") {
+    } else if (type === "weekly") {
         passButton = document.getElementById("weeklyPass");
         failButton = document.getElementById("weeklyFail");
     }
 
-    passButton.classList.remove(
-        "selected-pass",
-        "selected-fail"
-    );
+    passButton.classList.remove("selected-pass", "selected-fail");
 
-    failButton.classList.remove(
-        "selected-pass",
-        "selected-fail"
-    );
+    failButton.classList.remove("selected-pass", "selected-fail");
 
     if (result === "PASS") {
         passButton.classList.add("selected-pass");
-    }
-    else {
+    } else {
         failButton.classList.add("selected-fail");
     }
 
-    const failed =
-        inspectionData.groundBond === "FAIL" ||
-        inspectionData.insulation === "FAIL" ||
-        inspectionData.weekly === "FAIL";
+    const failed = inspectionData.groundBond === "FAIL" || inspectionData.insulation === "FAIL" || inspectionData.weekly === "FAIL";
 
-    document.getElementById(
-        "failureSection"
-    ).style.display =
-        failed ? "block" : "none";
+    document.getElementById("failureSection").style.display = failed ? "block" : "none";
 }
 
 document.getElementById("gbPass").addEventListener("click", () => {
@@ -138,11 +139,10 @@ document.getElementById("cancelInspection").addEventListener("click", async () =
 
     modal.style.display = "none";
     currentBench = null
-    refreshLocks()
 });
 
 document.getElementById("saveInspection").addEventListener("click", async () => {
-    if (!inspectionData.groundBond) {
+    if (!NO_GROUNDBOND.includes(currentBench.innerText.trim()) && !inspectionData.groundBond) {
         alert("Select Ground Bond result");
         return;
     }
@@ -152,12 +152,14 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
         return;
     }
 
-    if (IS_FRIDAY && !inspectionData.weekly) {
+    if (IS_FRIDAY && !NO_WEEKLY.includes(currentBench.innerText.trim()) && !inspectionData.weekly) {
         alert("Select Weekly Check result");
         return;
     }
+    const benchName = currentBench.innerText.trim()
+    const failed =(!NO_GROUNDBOND.includes(benchName) && inspectionData.groundBond === "FAIL") || inspectionData.insulation === "FAIL" ||
+    (!NO_WEEKLY.includes(benchName) && inspectionData.weekly === "FAIL");
 
-    const failed = inspectionData.groundBond === "FAIL" || inspectionData.insulation === "FAIL" || inspectionData.weekly === "FAIL";
     const failReason = document.getElementById("failReason").value;
 
     if (failed && !failReason) {

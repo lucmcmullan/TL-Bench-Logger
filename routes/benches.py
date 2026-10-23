@@ -20,6 +20,9 @@ def lock_bench():
     existing = BenchLock.query.filter_by(bench_id=data["bench_id"]).first()
 
     if existing:
+        if existing.locked_by == session["initials"]:
+            return jsonify ({ "success": True })
+        
         if existing.locked_at < (datetime.now() - timedelta(minutes=2)):
             db.session.delete(existing)
             db.session.commit()
