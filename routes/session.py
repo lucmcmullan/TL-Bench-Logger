@@ -11,10 +11,12 @@ from datetime import datetime, timedelta
 from factory import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
+from routes.auth import valid_session_required
 
 session_bp = Blueprint("session", __name__)
 
 @session_bp.route("/heartbeat", methods=["POST"])
+@valid_session_required
 def heartbeat():
     if "session_id" not in session:
         return jsonify({ "success": False}), 401
@@ -28,6 +30,7 @@ def heartbeat():
     return jsonify({ "success": True })
 
 @session_bp.route("/dashboard")
+@valid_session_required
 def dashboard():
     is_friday = datetime.today().weekday() == 4
     active_users = (
@@ -36,8 +39,8 @@ def dashboard():
             SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
             )
     
-    if "session_id" not in session:
-        return redirect("/")
+    if "session_id" not in session or "initials" not in session:
+        return jsonify({ "success": False, "message": "You must be logged in to access this."}), 401
     
     benches = Bench.query.all()
     
@@ -57,6 +60,7 @@ def dashboard():
         active_users=active_users)
 
 @session_bp.route("/complete-session", methods=["POST"])
+@valid_session_required
 def complete_session():
     current = InspectionSession.query.get(session["session_id"])
     

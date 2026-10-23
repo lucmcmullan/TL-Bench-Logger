@@ -1,3 +1,5 @@
+from functools import wraps
+
 from datetime import date
 
 from flask import(
@@ -5,7 +7,6 @@ from flask import(
     render_template,
     request,
     redirect,
-    url_for,
     session
 )
 
@@ -16,6 +17,14 @@ from datetime import date
 
 auth_bp = Blueprint("auth", __name__)
 
+def valid_session_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "session_id" not in session or "initials" not in session:
+            return redirect("/")
+        return f(*args, **kwargs)
+    return decorated
+        
 @auth_bp.route("/")
 def login_page():
     return render_template("login.html")

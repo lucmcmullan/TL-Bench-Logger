@@ -5,6 +5,7 @@ from flask import(
     session
 )
 
+from routes.auth import valid_session_required
 from database.db import db
 from datetime import date, datetime, timedelta
 from database.models import Inspection, InspectionSession, BenchLock
@@ -14,7 +15,11 @@ from socketio_instance import socketio
 bench_bp = Blueprint("bench", __name__)
 
 @bench_bp.route("/lock-bench", methods=["POST"])
+@valid_session_required
 def lock_bench():
+    if "initials" not in session:
+        return jsonify({ "success": False, "message": "You must be logged in to access this."}), 401
+    
     BenchLock.query.filter(BenchLock.locked_at < (datetime.now() - timedelta(minutes=2))).delete()
     db.session.commit()
     
@@ -45,6 +50,7 @@ def lock_bench():
     return jsonify({ "success": True })
 
 @bench_bp.route("/unlock-bench", methods=["POST"])
+@valid_session_required
 def unlock_bench():
     data = request.json
 
@@ -61,12 +67,14 @@ def unlock_bench():
     return jsonify({ "success": False, "message": "No lock found"})
 
 @bench_bp.route("/lock-status")
+@valid_session_required
 def lock_status():
     locks = BenchLock.query.all()
 
     return jsonify([{ "bench_id": l.bench_id, "locked_by": l.locked_by } for l in locks])
  
 @bench_bp.route("/inspect", methods=["POST"])
+@valid_session_required
 def inspect_bench():
     data = request.json
 
@@ -117,6 +125,7 @@ def inspect_bench():
     return jsonify({ "success": True, "overall": overall })
 
 @bench_bp.route("/inspection-status")
+@valid_session_required
 def inspection_status():
     inspections = Inspection.query.join(InspectionSession).filter(InspectionSession.date == date.today())
     

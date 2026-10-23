@@ -4,7 +4,7 @@ from database.models import Bench
 
 from factory import FACTORY_LAYOUT
 
-with app.app_context(): # change to actual benches, not just a placeholder
+with app.app_context():
     db.drop_all()
     db.create_all()
     
