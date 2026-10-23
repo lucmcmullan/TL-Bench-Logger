@@ -12,6 +12,8 @@ from flask import(
 from database.db import db
 from database.models import InspectionSession, Inspection
 
+from datetime import date
+
 auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/")
@@ -21,25 +23,24 @@ def login_page():
 @auth_bp.route("/start", methods=["POST"])
 def start_session():
     initials = request.form["initials"].upper()
-    
-    candidate_session = (InspectionSession.query.filter_by(initials=initials, status="IN_PROGRESS").all())
-    
-    existing_session = None
-    
-    for s in candidate_session:
-        inspection_count = Inspection.query.filter_by(session_id=s.id).count()
-        
-        if inspection_count > 0:
-            existing_session = s
-            break
-        
-    if existing_session:
-        session["session_id"] = existing_session.id
+    today_session = InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first()
+
+    if today_session:
+        active_users = []
+
+        if today_session.active_users:
+            active_users = (today_session.active_users.split(", "))
+        if initials not in active_users:
+            active_users.append(initials)
+            today_session.active_users = ", ".join(active_users)
+            db.session.commit()
+            
+        session["session_id"] = today_session.id
         session["initials"] = initials
         
-        return redirect(url_for("session.dashboard"))
+        return redirect("/dashboard")
     
-    elif not existing_session:
+    elif not today_session:
         new_session = InspectionSession(initials=initials, date=date.today(), status="IN_PROGRESS")
         
         db.session.add(new_session)
@@ -48,4 +49,4 @@ def start_session():
         session["session_id"] = new_session.id
         session["initials"] = initials
         
-        return redirect(url_for("session.dashboard"))
+        return redirect("/dashboard")

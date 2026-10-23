@@ -104,3 +104,23 @@ select {
     box-sizing: border-box;
     margin-bottom: 15px;
 }
+
+.selected-pass {
+    background: #28a745 !important;
+    color: white;
+    border: 3px solid #1e7e34;
+}
+
+.selected-fail {
+    background: #dc3545 !important;
+    color: white;
+    border: 3px solid #a71d2a;
+}
+
+.button-group button {
+    transition: 0.2s;
+}
+
+.button-group button:hover {
+    opacity: 0.9;
+}

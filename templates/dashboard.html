@@ -16,7 +16,40 @@
     #{{ session_id }}
 </div>
 
+<div class="active-users">
+    Active Users:
+    <ul>
+    {% for user in active_users %}
+        <li>{{ user.initials }}</li>
+    {% endfor %}
+    </ul>
+</div>
+
 <div id="factory-floor">
+{% for bench in benches %}
+
+    {% set result = bench_results.get(bench.id) %}
+
+    <button
+        class="bench
+        {% if result == 'PASS' %}
+            pass
+        {% elif result == 'FAIL' %}
+            fail
+        {% else %}
+            pending
+        {% endif %}"
+        data-id="{{ bench.id }}"
+    >
+        {{ bench.name }}
+    </button>
+
+{% endfor %}
+
+<button id="completeSession">Complete Session</button>
+
+</div>
+
 <div id="inspectionModal" class="modal">
 
     <div class="modal-content">
@@ -80,26 +113,6 @@
 
 </div>
 
-
-{% for bench in benches %}
-    <button
-        class="bench
-        {% if result == 'PASS' %}
-            pass
-        {% elif result == 'FAIL' %}
-            fail
-        {% else %}
-            pending
-        {% endif %}"
-        data-id="{{ bench.id }}"
-    >
-        {{ bench.name }}
-    </button>
-{% endfor %}
-
-<button id="completeSession">Complete Session</button>
-
-</div>
 <script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
 
 <script src="{{ url_for('static', filename='js/floorplan.js') }}"></script>
@@ -109,8 +122,6 @@
 
 <!-- 
 add progression statistics 
-
-save it across the board for the whole day,  so repeated refreshes and logins dont refresh the page
 
 live update if another session is in progress
 

@@ -11,7 +11,16 @@ document.querySelectorAll(".bench").forEach(button => {
     button.addEventListener("click", () => {
         currentBench = button;
 
-        inspectionData = { groundBond: null, insulation: null, weekly: null};
+        inspectionData = { groundBond: null, insulation: null, weekly: null };
+
+        document.getElementById("failReason").value = "";
+        document.getElementById("comments").value = "";
+        document.getElementById("failureSection").style.display = "none";
+
+        ["gbPass", "gbFail", "irPass", "irFail", "weeklyPass", "weeklyFail"]
+        .forEach(id => {
+            document.getElementById(id).classList.remove("selected-pass", "selected-fail");
+        });
 
         document.getElementById("modalBenchTitle").innerText = button.innerText;
         document.getElementById("failureSection").style.display = "none";
@@ -27,11 +36,51 @@ document.querySelectorAll(".bench").forEach(button => {
 });
 
 function setResult(type, result) {
+
     inspectionData[type] = result;
 
-    if (result === "FAIL") {
-        document.getElementById("failureSection").style.display = "block";
+    let passButton;
+    let failButton;
+
+    if (type === "groundBond") {
+        passButton = document.getElementById("gbPass");
+        failButton = document.getElementById("gbFail");
     }
+    else if (type === "insulation") {
+        passButton = document.getElementById("irPass");
+        failButton = document.getElementById("irFail");
+    }
+    else if (type === "weekly") {
+        passButton = document.getElementById("weeklyPass");
+        failButton = document.getElementById("weeklyFail");
+    }
+
+    passButton.classList.remove(
+        "selected-pass",
+        "selected-fail"
+    );
+
+    failButton.classList.remove(
+        "selected-pass",
+        "selected-fail"
+    );
+
+    if (result === "PASS") {
+        passButton.classList.add("selected-pass");
+    }
+    else {
+        failButton.classList.add("selected-fail");
+    }
+
+    const failed =
+        inspectionData.groundBond === "FAIL" ||
+        inspectionData.insulation === "FAIL" ||
+        inspectionData.weekly === "FAIL";
+
+    document.getElementById(
+        "failureSection"
+    ).style.display =
+        failed ? "block" : "none";
 }
 
 document.getElementById("gbPass").addEventListener("click", () => {
@@ -125,7 +174,7 @@ async function refreshBenchStatuses() {
         const data = await response.json()
 
         data.forEach(record => {
-            const button = document.querySelector(`.bench[data-id="${record.bench_id}]`)
+            const button = document.querySelector(`.bench[data-id="${record.bench_id}"]`)
 
             if (!button) return
 
@@ -133,8 +182,10 @@ async function refreshBenchStatuses() {
 
             if (record.result === "PASS") {
                 button.classList.add("pass")
-            } else {
+            } else if (record.result === "FAIL") {
                 button.classList.add("fail")
+            } else {
+                button.classList.add("pending")
             }
         })
     } catch (err) {
@@ -142,8 +193,12 @@ async function refreshBenchStatuses() {
     }
 }
 
-refreshBenchStatuses()
+async function sendHeartbeat() {
+    await fetch("/heartbeat", { method: "POST" });
+}
 
-setInterval(() => {
-    refreshBenchStatuses
-}, 5000);
+refreshBenchStatuses()
+sendHeartbeat()
+
+setInterval(sendHeartbeat, 30000);
+setInterval(refreshBenchStatuses, 5000);
