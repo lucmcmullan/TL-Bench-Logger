@@ -15,12 +15,18 @@ bench_bp = Blueprint("bench", __name__)
 
 @bench_bp.route("/lock-bench", methods=["POST"])
 def lock_bench():
+    BenchLock.query.filter(BenchLock.locked_at < (datetime.now() - timedelta(minutes=2))).delete()
+    db.session.commit()
+    
     data = request.json
 
     existing = BenchLock.query.filter_by(bench_id=data["bench_id"]).first()
 
     if existing:
         if existing.locked_by == session["initials"]:
+            existing.locked_at = datetime.now()
+            db.session.commit()
+
             return jsonify ({ "success": True })
         
         if existing.locked_at < (datetime.now() - timedelta(minutes=2)):
@@ -38,12 +44,6 @@ def lock_bench():
 
     return jsonify({ "success": True })
 
-@bench_bp.route("/lock-status")
-def lock_status():
-    locks = BenchLock.query.all()
-
-    return jsonify([{ "bench_id": l.bench_id, "locked_by": l.locked_by } for l in locks])
-
 @bench_bp.route("/unlock-bench", methods=["POST"])
 def unlock_bench():
     data = request.json
@@ -59,7 +59,13 @@ def unlock_bench():
         return jsonify({ "success": True})
 
     return jsonify({ "success": False, "message": "No lock found"})
-    
+
+@bench_bp.route("/lock-status")
+def lock_status():
+    locks = BenchLock.query.all()
+
+    return jsonify([{ "bench_id": l.bench_id, "locked_by": l.locked_by } for l in locks])
+ 
 @bench_bp.route("/inspect", methods=["POST"])
 def inspect_bench():
     data = request.json
@@ -67,9 +73,6 @@ def inspect_bench():
     results = [data.get("gb_result"), data.get("ir_result"), data.get("weekly_result")]
 
     overall = "FAIL" if "FAIL" in results else "PASS"
-
-    if data["gb_result"] == "FAIL" or data["ir_result"] == "FAIL" or data.get("weekly_result") == "FAIL":
-        overall = "FAIL"
 
     inspection = Inspection.query.filter_by(
         session_id=session["session_id"], 
@@ -109,6 +112,7 @@ def inspect_bench():
     db.session.commit()
 
     socketio.emit("bench_updated", {"bench_id": data["bench_id"], "result": overall})
+    socketio.emit("lock_changed", {"bench_id": data["bench_id"], "locked": False})
 
     return jsonify({ "success": True, "overall": overall })
 

@@ -16,6 +16,9 @@ session_bp = Blueprint("session", __name__)
 
 @session_bp.route("/heartbeat", methods=["POST"])
 def heartbeat():
+    if "session_id" not in session:
+        return jsonify({ "success": False}), 401
+    
     user = SessionUser.query.filter_by(session_id=session["session_id"], initials=session["initials"]).first()
 
     if user:

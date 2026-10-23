@@ -1,4 +1,5 @@
 let currentBench = null;
+const draftInspections = {}
 
 const NO_WEEKLY = [
     "TB01",
@@ -16,6 +17,18 @@ let inspectionData = {
 };
 
 const modal = document.getElementById("inspectionModal");
+
+function saveDraft() {
+    if (!currentBench) return
+
+    draftInspections[currentBench.dataset.id] = {
+        groundBond: inspectionData.groundBond,
+        insulation: inspectionData.insulation,
+        weekly: inspectionData.weekly,
+        failReason: document.getElementById("failReason").value,
+        comments: document.getElementById("comments").value
+    }
+}
 document.querySelectorAll(".bench").forEach(button => {
     button.addEventListener("click", async () => {
         const response = await fetch(
@@ -36,17 +49,31 @@ document.querySelectorAll(".bench").forEach(button => {
 
         currentBench = button;
 
-        inspectionData = { groundBond: null, insulation: null, weekly: null};
+        const draft = draftInspections[button.dataset.id]
 
-        document.getElementById("failReason").value = "";
-        document.getElementById("comments").value = "";
+        inspectionData = draft ? {
+            groundBond: draft.groundBond,
+            insulation: draft.insulation,
+            weekly: draft.weekly
+        }: {
+            groundBond: null,
+            insulation: null,
+            weekly: null
+        }
+
+        document.getElementById("failReason").value = draft?.failReason || ""
+        document.getElementById("comments").value = draft?.comments || ""
 
         document.getElementById("failureSection").style.display = "none";
 
         ["gbPass", "gbFail", "irPass", "irFail", "weeklyPass", "weeklyFail"].forEach(id => {
             document.getElementById(id).classList.remove("selected-pass", "selected-fail");
         });
-
+        
+        if (inspectionData.groundBond) setResult("groundBond", inspectionData.groundBond)
+        if (inspectionData.insulation) setResult("insulation", inspectionData.insulation)
+        if (inspectionData.weekly) setResult("weekly", inspectionData.weekly)
+        
         document.getElementById("modalBenchTitle").innerText = button.innerText;
         
         const benchName = button.innerText.trim()
@@ -67,7 +94,8 @@ document.querySelectorAll(".bench").forEach(button => {
 });
 
 function setResult(type, result) {
-
+    const benchName = currentBench?.innerText.trim() || "";
+    
     inspectionData[type] = result;
 
     let passButton;
@@ -137,6 +165,7 @@ document.getElementById("cancelInspection").addEventListener("click", async () =
         );
     }
 
+    saveDraft()
     modal.style.display = "none";
     currentBench = null
 });
@@ -199,6 +228,7 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
     currentBench.classList.add(result.overall === "PASS" ? "pass" : "fail");
     modal.style.display = "none";
 
+    delete draftInspections[currentBench.dataset.id]
     currentBench = null
 });
 

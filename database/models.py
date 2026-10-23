@@ -7,7 +7,7 @@ class Bench(db.Model):
     __tablename__ = "benches"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     x = db.Column(db.Integer, nullable=True)
     y = db.Column(db.Integer, nullable=True)
     active = db.Column(db.Boolean, default=True)
