@@ -55,12 +55,11 @@ document.querySelectorAll(".bench").forEach(button => {
         const weeklySection = document.getElementById("weeklySection")
 
         groundBondSection.style.display = NO_GROUNDBOND.includes(benchName) ? "none" : "block"
-        weeklySection.style.display = NO_WEEKLY.includes(benchName) ? "none" : "block"
 
-        if (IS_FRIDAY) {
-            document.getElementById("weeklySection").style.display = "block";
+        if (IS_FRIDAY && !NO_WEEKLY.includes(benchName)) {
+            weeklySection.style.display = "block";
         } else {
-            document.getElementById("weeklySection").style.display = "none";
+            weeklySection.style.display = "none";
         }
 
         modal.style.display = "block";
@@ -95,8 +94,9 @@ function setResult(type, result) {
         failButton.classList.add("selected-fail");
     }
 
-    const failed = inspectionData.groundBond === "FAIL" || inspectionData.insulation === "FAIL" || inspectionData.weekly === "FAIL";
-
+    const failed =(!NO_GROUNDBOND.includes(benchName) && inspectionData.groundBond === "FAIL") || inspectionData.insulation === "FAIL" ||
+    (!NO_WEEKLY.includes(benchName) && inspectionData.weekly === "FAIL");
+    
     document.getElementById("failureSection").style.display = failed ? "block" : "none";
 }
 

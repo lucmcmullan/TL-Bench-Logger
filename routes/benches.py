@@ -64,7 +64,9 @@ def unlock_bench():
 def inspect_bench():
     data = request.json
 
-    overall = "PASS"
+    results = [data.get("gb_result"), data.get("ir_result"), data.get("weekly_result")]
+
+    overall = "FAIL" if "FAIL" in results else "PASS"
 
     if data["gb_result"] == "FAIL" or data["ir_result"] == "FAIL" or data.get("weekly_result") == "FAIL":
         overall = "FAIL"
