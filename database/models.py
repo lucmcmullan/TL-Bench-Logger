@@ -30,7 +30,6 @@ class InspectionSession(db.Model):
     date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime)
-    active_users = db.Column(db.Text, default="")
     status = db.Column(db.String(20), default="IN_PROGRESS")
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)

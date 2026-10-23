@@ -18,12 +18,11 @@
 
 <div class="active-users">
     Active Users:
-    <ul>
-    {% for user in active_users %}
-        <li>{{ user.initials }}</li>
-    {% endfor %}
-    </ul>
+    <span id="activeUsersList">
+        {{ active_users | map(attribute='initials') | join(', ') }}
+    </span>
 </div>
+
 
 <div id="factory-floor">
 
@@ -160,6 +159,8 @@
 
 <!-- 
 add progression statistics, live counts, etc
+
+add authorised users (just initials for no)
 
 warn second user if a session is in progress
 

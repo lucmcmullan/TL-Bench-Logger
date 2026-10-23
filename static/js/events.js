@@ -8,6 +8,10 @@ socket.onAny((event, data) => {
     console.log("EVENT RECEIVED:", event, data);
 });
 
+socket.on("active_users_changed", data =>{
+    document.getElementById("activeUsersList").textContent = data.users.join(", ")
+})
+
 socket.on("bench_updated", data => {
     const button = document.querySelector(`.bench[data-id="${data.bench_id}"]`);
 

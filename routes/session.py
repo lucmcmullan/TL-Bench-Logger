@@ -12,6 +12,7 @@ from factory import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
 from routes.auth import valid_session_required
+from socketio_instance import socketio
 
 session_bp = Blueprint("session", __name__)
 
@@ -27,21 +28,37 @@ def heartbeat():
         user.last_seen = datetime.now()
         db.session.commit()
 
+    active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
+    
+    socketio.emit("active_users_changed", { "users": [u.initials for u in active_users]})
+
     return jsonify({ "success": True })
+
+@session_bp.route("/logout", methods=["POST"])
+def logout():
+    user = SessionUser.query.filter_by(session_id=session["session_id"], initials=session["initials"]).first()
+
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+
+    session.clear()
+    
+    return "", 204
+
 
 @session_bp.route("/dashboard")
 @valid_session_required
 def dashboard():
     is_friday = datetime.today().weekday() == 4
+
     active_users = (
-        SessionUser.query.filter(
-            SessionUser.session_id == session["session_id"], 
-            SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
-            )
+        SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
     
-    if "session_id" not in session or "initials" not in session:
-        return jsonify({ "success": False, "message": "You must be logged in to access this."}), 401
-    
+    print("Active users:")
+    for user in active_users:
+        print(user.initials, user.last_seen)
+
     benches = Bench.query.all()
     
     inspections = Inspection.query.filter_by(session_id=session["session_id"]).all()
@@ -63,10 +80,19 @@ def dashboard():
 @valid_session_required
 def complete_session():
     current = InspectionSession.query.get(session["session_id"])
+
+    inspections = Inspection.query.filter_by(session_id=session["session_id"]).count()
+
+    bench_count = Bench.query.count()
+
+    if inspections < bench_count:
+        return jsonify({ "success": False, "message": f"{bench_count - inspections} benches remain untested." })
     
     current.status = "COMPLETED"
     current.end_time = datetime.now()
     
     db.session.commit()
-    
+
+    session.clear()
+
     return jsonify({ "success": True })

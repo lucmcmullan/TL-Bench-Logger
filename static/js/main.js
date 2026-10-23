@@ -232,6 +232,29 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
     currentBench = null
 });
 
+document.getElementById("completeSession").addEventListener("click", async () => {
+        const confirmed = confirm("Are you sure you want to complete this session?");
+
+        if (!confirmed) return;
+
+        const response = await fetch("/complete-session", { method: "POST" });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(
+                "Session completed successfully."
+            );
+
+            window.location.href = "/";
+        } else {
+            alert(result.message)
+        }
+});
+
+window.addEventListener("beforeunload", () => {
+    navigator.sendBeacon("/logout")
+})
+
 /*
 async function refreshBenchStatuses() {
     try{
