@@ -10,7 +10,7 @@ from flask import(
 )
 
 from database.db import db
-from database.models import InspectionSession, Inspection
+from database.models import InspectionSession
 
 from datetime import date
 

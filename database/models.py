@@ -11,8 +11,17 @@ class Bench(db.Model):
     x = db.Column(db.Integer, nullable=True)
     y = db.Column(db.Integer, nullable=True)
     active = db.Column(db.Boolean, default=True)
+    tested_by = db.Column(db.String(10), nullable=True)
+    last_modified = db.Column(db.DateTime)
     inspections = db.relationship("Inspection", backref="bench", lazy=True)
 
+class BenchLock(db.Model):
+    __tablename__ = "bench_locks"
+
+    bench_id = db.Column(db.Integer, db.ForeignKey("benches.id"), primary_key=True)
+    locked_by = db.Column(db.String(10), nullable=False)
+    locked_at = db.Column(db.DateTime, nullable=False)
+    
 class InspectionSession(db.Model):
     __tablename__ = "sessions"
 
@@ -29,6 +38,7 @@ class InspectionSession(db.Model):
 
 class Inspection(db.Model):
     __tablename__ = "inspections"
+    __table_args__ = (db.UniqueConstraint("session_id", "bench_id", name="uq_session_bench"),)
 
     id = db.Column(db.Integer, primary_key=True)
     session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), nullable=False)

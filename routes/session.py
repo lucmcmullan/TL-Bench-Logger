@@ -8,6 +8,7 @@ from flask import(
 
 from datetime import datetime, timedelta
 
+from factory import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
 
@@ -46,7 +47,7 @@ def dashboard():
     
     return render_template(
         "dashboard.html", 
-        benches=benches, 
+        layout=FACTORY_LAYOUT, 
         bench_results=bench_results, 
         is_friday=is_friday, 
         session_id=session["session_id"],

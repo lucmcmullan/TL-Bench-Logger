@@ -26,25 +26,53 @@
 </div>
 
 <div id="factory-floor">
-{% for bench in benches %}
+<div id="factory-floor">
 
-    {% set result = bench_results.get(bench.id) %}
+{% for row in layout %}
 
-    <button
-        class="bench
-        {% if result == 'PASS' %}
-            pass
-        {% elif result == 'FAIL' %}
-            fail
+    <div class="floor-row">
+
+    {% for bench in row %}
+
+        {% if bench %}
+
+            {% set result = bench_results.get(bench.id) %}
+
+            <button
+                class="bench
+
+                {% if result == 'PASS' %}
+                    pass
+
+                {% elif result == 'FAIL' %}
+                    fail
+
+                {% else %}
+                    pending
+                {% endif %}
+                "
+
+                data-id="{{ bench.id }}"
+                style="grid-column: span {{ bench.span }}"
+            >
+
+                {{ bench.label }}
+
+            </button>
+
         {% else %}
-            pending
-        {% endif %}"
-        data-id="{{ bench.id }}"
-    >
-        {{ bench.name }}
-    </button>
+
+            <div class="gap"></div>
+
+        {% endif %}
+
+    {% endfor %}
+
+    </div>
 
 {% endfor %}
+
+</div>
 
 <button id="completeSession">Complete Session</button>
 
@@ -121,11 +149,21 @@
 </html>
 
 <!-- 
-add progression statistics 
+add progression statistics, live counts, etc
 
 live update if another session is in progress
 
 warn second user if a session is in progress
 
 build a map of the actual factory floor not just a template map
+add legend
+    green passed
+    red failed
+    blue being tested
+    grey not tested
+
+preserve existing results when re-opening a bench
+
+
+view previous days in a map, instead of just a database
 -->

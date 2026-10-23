@@ -8,26 +8,42 @@ let inspectionData = {
 
 const modal = document.getElementById("inspectionModal");
 document.querySelectorAll(".bench").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
+        const response = await fetch(
+            "/lock-bench",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bench_id: button.dataset.id })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(`Bench currently being edited by ${result.locked_by}`);
+            return;
+        }
+
         currentBench = button;
 
-        inspectionData = { groundBond: null, insulation: null, weekly: null };
+        inspectionData = { groundBond: null, insulation: null, weekly: null
+        };
 
         document.getElementById("failReason").value = "";
         document.getElementById("comments").value = "";
+
         document.getElementById("failureSection").style.display = "none";
 
-        ["gbPass", "gbFail", "irPass", "irFail", "weeklyPass", "weeklyFail"]
-        .forEach(id => {
+        ["gbPass", "gbFail", "irPass", "irFail", "weeklyPass", "weeklyFail"].forEach(id => {
             document.getElementById(id).classList.remove("selected-pass", "selected-fail");
         });
 
         document.getElementById("modalBenchTitle").innerText = button.innerText;
-        document.getElementById("failureSection").style.display = "none";
+
         if (IS_FRIDAY) {
             document.getElementById("weeklySection").style.display = "block";
-        }
-        else {
+        } else {
             document.getElementById("weeklySection").style.display = "none";
         }
 
@@ -107,8 +123,22 @@ document.getElementById("weeklyFail").addEventListener("click", () => {
     setResult("weekly", "FAIL");
 });
 
-document.getElementById("cancelInspection").addEventListener("click", () => {
+document.getElementById("cancelInspection").addEventListener("click", async () => {
+    if (currentBench) {
+
+        await fetch(
+            "/unlock-bench",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({bench_id: currentBench.dataset.id})
+            }
+        );
+    }
+
     modal.style.display = "none";
+    currentBench = null
+    refreshLocks()
 });
 
 document.getElementById("saveInspection").addEventListener("click", async () => {
@@ -166,6 +196,11 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
     currentBench.classList.remove("pending", "pass", "fail");
     currentBench.classList.add(result.overall === "PASS" ? "pass" : "fail");
     modal.style.display = "none";
+
+    currentBench = null
+    
+    refreshLocks()
+    refreshBenchStatuses()
 });
 
 async function refreshBenchStatuses() {
@@ -197,8 +232,50 @@ async function sendHeartbeat() {
     await fetch("/heartbeat", { method: "POST" });
 }
 
+async function refreshLocks() {
+
+    const response =
+        await fetch("/lock-status");
+
+    const locks =
+        await response.json();
+
+    document.querySelectorAll(".bench")
+        .forEach(button => {
+
+            button.classList.remove(
+                "locked"
+            );
+
+        });
+
+    locks.forEach(lock => {
+
+        const button =
+            document.querySelector(
+                `.bench[data-id="${lock.bench_id}"]`
+            );
+
+        if (button) {
+
+            button.classList.add(
+                "locked"
+            );
+
+        }
+
+    });
+
+}
+
 refreshBenchStatuses()
 sendHeartbeat()
+refreshLocks();
 
 setInterval(sendHeartbeat, 30000);
-setInterval(refreshBenchStatuses, 5000);
+
+setInterval(() => {
+    refreshBenchStatuses();
+    refreshLocks();
+
+}, 5000);
