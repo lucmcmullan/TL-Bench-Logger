@@ -9,13 +9,6 @@
 
 <h2>Test Bench Test Logger</h2>
 
-<div class="resume-banner">
-    Previous session restored
-
-    Session:
-    #{{ session_id }}
-</div>
-
 <div class="active-users">
     Active Users:
     <span id="activeUsersList">
@@ -23,6 +16,20 @@
     </span>
 </div>
 
+<div class="progress-container">
+    <div class="progress-header">
+        Progress:
+        {{ completed_benches }}/{{ total_benches }}
+        ({{ progress_percent }}%)
+    </div>
+
+    <div class="progress-bar">
+        <div 
+        class="progress-fill" 
+        style="width: {{ progress_percent }}%;">
+        </div>
+    </div>
+</div>
 
 <div id="factory-floor">
 

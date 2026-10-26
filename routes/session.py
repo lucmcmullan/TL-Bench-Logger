@@ -29,7 +29,6 @@ def heartbeat():
         db.session.commit()
 
     active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
-    
     socketio.emit("active_users_changed", { "users": [u.initials for u in active_users]})
 
     return jsonify({ "success": True })
@@ -52,14 +51,16 @@ def logout():
 def dashboard():
     is_friday = datetime.today().weekday() == 4
 
-    active_users = (
-        SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
+    active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
     
     print("Active users:")
     for user in active_users:
         print(user.initials, user.last_seen)
 
-    benches = Bench.query.all()
+    total_benches = Bench.query.count()
+
+    completed_benches = Inspection.query.filter_by(session_id=session["session_id"]).count()
+    progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
     
     inspections = Inspection.query.filter_by(session_id=session["session_id"]).all()
     
@@ -74,6 +75,9 @@ def dashboard():
         bench_results=bench_results, 
         is_friday=is_friday, 
         session_id=session["session_id"],
+        total_benches=total_benches,
+        completed_benches=completed_benches,
+        progress_percent=progress_percent,
         active_users=active_users)
 
 @session_bp.route("/complete-session", methods=["POST"])
