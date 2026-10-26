@@ -27,7 +27,16 @@ def valid_session_required(f):
         return f(*args, **kwargs)
     
     return decorated
-        
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("is_admin"):
+            return redirect("/dashboard")
+
+        return f(*args, **kwargs)
+    return decorated
+
 @auth_bp.route("/")
 def login_page():
     return render_template("login.html")

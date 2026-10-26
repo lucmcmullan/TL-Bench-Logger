@@ -251,9 +251,13 @@ document.getElementById("completeSession").addEventListener("click", async () =>
         }
 });
 
-window.addEventListener("beforeunload", () => {
-    navigator.sendBeacon("/logout")
-})
+/*
+if (window.location.pathname === "/dashboard"){
+    window.addEventListener("beforeunload", () => {
+        navigator.sendBeacon("/logout")
+    })
+}
+*/
 
 /*
 async function refreshBenchStatuses() {

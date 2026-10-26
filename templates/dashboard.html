@@ -18,6 +18,12 @@
 </div>
 -->
 
+{% if session.get("is_admin") %}
+
+<a href="/admin/users">User Management</a>
+
+{% endif %}
+
 <div class="progress-container">
     <div class="progress-header">
         Progress:
