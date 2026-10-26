@@ -29,6 +29,13 @@ function saveDraft() {
         comments: document.getElementById("comments").value
     }
 }
+
+function closeModal() {
+    modal.style.display = "none"
+    delete draftInspections[currentBench?.dataset?.id]
+    currentBench = null
+}
+
 document.querySelectorAll(".bench").forEach(button => {
     button.addEventListener("click", async () => {
         const response = await fetch(
@@ -207,10 +214,7 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
         "/inspect",
         {
             method: "POST",
-            headers: {
-                "Content-Type":
-                "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 bench_id: currentBench.dataset.id,
                 gb_result: inspectionData.groundBond,
@@ -226,10 +230,9 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
 
     currentBench.classList.remove("pending", "pass", "fail");
     currentBench.classList.add(result.overall === "PASS" ? "pass" : "fail");
-    modal.style.display = "none";
+    await refreshProgress()
 
-    delete draftInspections[currentBench.dataset.id]
-    currentBench = null
+    closeModal()
 });
 
 document.getElementById("userManagementButton")?.addEventListener("click", () => {
@@ -261,6 +264,32 @@ document.getElementById("completeSession").addEventListener("click", async () =>
         }
 });
 
+document.getElementById("resetInspection").addEventListener("click", async () => {
+    if (!currentBench) return 
+
+    await fetch(
+        "/reset-inspection", 
+        { 
+            method: "POST", 
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ bench_id: currentBench.dataset.id })
+        })
+
+    currentBench.classList.remove("pass", "fail", "locked")
+
+    currentBench.classList.add("pending")
+    await refreshProgress();
+
+    closeModal()
+})
+
+async function refreshProgress() {
+    const response = await fetch("/progress")
+    const data = await response.json()
+
+    document.getElementById("progressHeader").textContent = `Progress: ${data.completed}/${data.total} (${data.percent}%)`
+    document.getElementById("progressFill").style.width = `${data.percent}%`
+}
 async function sendHeartbeat() {
     await fetch("/heartbeat", { method: "POST" });
 }

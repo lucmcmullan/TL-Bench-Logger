@@ -8,7 +8,7 @@ from flask import(
 from routes.auth import valid_session_required
 from database.db import db
 from datetime import date, datetime, timedelta
-from database.models import Inspection, InspectionSession, BenchLock
+from database.models import Inspection, InspectionSession, BenchLock, Bench
 
 from socketio_instance import socketio
 
@@ -130,3 +130,28 @@ def inspection_status():
     inspections = Inspection.query.join(InspectionSession).filter(InspectionSession.date == date.today())
     
     return jsonify([{ "bench_id": i.bench_id, "result": i.overall_result } for i in inspections])
+
+@bench_bp.route("/reset-inspection", methods=["POST"])
+@valid_session_required
+def reset_inspection():
+    data = request.get_json()
+
+    inspection = Inspection.query.filter_by(session_id=session["session_id"], bench_id=data["bench_id"]).first()
+
+    if inspection:
+        db.session.delete(inspection)
+
+        db.session.commit()
+
+        return jsonify({ "success": True })
+
+@bench_bp.route("/progress")
+@valid_session_required
+def progress():
+    total_benches = Bench.query.count()
+
+    completed_benches = Inspection.query.filter_by(session_id=session["session_id"]).count()
+
+    progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
+
+    return jsonify({ "completed": completed_benches, "total": total_benches, "percent": progress_percent })

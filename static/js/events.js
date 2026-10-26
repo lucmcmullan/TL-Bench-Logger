@@ -9,6 +9,8 @@ socket.onAny((event, data) => {
 });
 
 socket.on("active_users_changed", data =>{
+    if (!document.getElementById("activeUsersList")) return
+
     document.getElementById("activeUsersList").textContent = data.users.join(", ")
 })
 
