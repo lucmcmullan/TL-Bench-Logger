@@ -2,7 +2,8 @@ from flask import (
     Blueprint,
     render_template,
     request,
-    redirect
+    redirect,
+    session
 )
 
 from werkzeug.security import generate_password_hash
@@ -59,9 +60,12 @@ def reset_password(user_id):
 @valid_session_required
 @admin_required
 def toggle_admin(user_id):
+    if user_id == session["user_id"]:
+        return "You cannot remove your own admin rights.", 400
+    
     user = User.query.get_or_404(user_id)
 
-    user.is_admin = (not user.is_admin)
+    user.is_admin = not user.is_admin
 
     db.session.commit()
 
@@ -71,6 +75,9 @@ def toggle_admin(user_id):
 @valid_session_required
 @admin_required
 def delete_user(user_id):
+    if user_id == session["user_id"]:
+        return "You cannot delete your own account.", 400
+
     user = User.query.get_or_404(user_id)
 
     db.session.delete(user)
