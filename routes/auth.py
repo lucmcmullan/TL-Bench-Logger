@@ -45,7 +45,7 @@ def start_session():
     existing_user = session.get("initials")
 
     if existing_user and existing_user != initials:
-        return f"Already logged in as {existing_user}. Please log out before switching user.", 403)
+        return f"Already logged in as {existing_user}. Please log out before switching user.", 403
 
     inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
 
