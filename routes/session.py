@@ -7,12 +7,13 @@ from flask import(
 )
 
 from datetime import datetime, timedelta
-
-from factory import FACTORY_LAYOUT
+from constants import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
 from routes.auth import valid_session_required
 from socketio_instance import socketio
+
+from constants import NO_CELL_PREFIX
 
 session_bp = Blueprint("session", __name__)
 
@@ -75,7 +76,8 @@ def dashboard():
         total_benches=total_benches,
         completed_benches=completed_benches,
         progress_percent=progress_percent,
-        active_users=active_users)
+        active_users=active_users
+        no_cell_prefix=NO_CELL_PREFIX)
 
 @session_bp.route("/complete-session", methods=["POST"])
 @valid_session_required

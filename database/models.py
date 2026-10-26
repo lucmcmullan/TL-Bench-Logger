@@ -2,6 +2,7 @@ from datetime import datetime
 
 from database.db import db
 
+from constants import defaults
 
 class Bench(db.Model):
     __tablename__ = "benches"
@@ -10,7 +11,7 @@ class Bench(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     x = db.Column(db.Integer, nullable=True)
     y = db.Column(db.Integer, nullable=True)
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=defaults["BenchActive"])
     tested_by = db.Column(db.String(10), nullable=True)
     last_modified = db.Column(db.DateTime)
     inspections = db.relationship("Inspection", backref="bench", lazy=True)
@@ -28,9 +29,9 @@ class InspectionSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     initials = db.Column(db.String(10), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    start_time = db.Column(db.DateTime, default=f"{defaults["InspectionSessionStartTime"]}")
     end_time = db.Column(db.DateTime)
-    status = db.Column(db.String(20), default="IN_PROGRESS")
+    status = db.Column(db.String(20), default=defaults["InspectionSessionStatus"])
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)
 

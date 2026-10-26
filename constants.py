@@ -1,3 +1,15 @@
+defaults = {
+    "BenchActive": True,
+    "InspectionSessionStartTime": "{datetime.utcnow}",
+    "InspectionSessionStatus": "IN_PROGRESS"
+}
+
+NO_CELL_PREFIX = {
+    "Hi-Bar",
+    "Packing",
+    "Returns"
+}
+
 FACTORY_LAYOUT = [
     [None, {"id": 48, "label": "01", "cell": "Hi-Bar", "span": 3}],
     [

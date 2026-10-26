@@ -3,7 +3,7 @@ from database.db import db
 from werkzeug.security import generate_password_hash
 from database.models import Bench, User
 
-from factory import FACTORY_LAYOUT
+from constants import FACTORY_LAYOUT
 
 with app.app_context():
     db.drop_all()

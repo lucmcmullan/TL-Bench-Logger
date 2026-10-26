@@ -66,7 +66,7 @@
             >
 
                 TB{{ bench.label }}<br>
-                {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
+                {% if bench.cell not in no_cell_prefix %}
                     Cell {{ bench.cell }}
                 {% else %}
                     {{ bench.cell }}
