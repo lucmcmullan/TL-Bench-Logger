@@ -232,6 +232,16 @@ document.getElementById("saveInspection").addEventListener("click", async () => 
     currentBench = null
 });
 
+document.getElementById("userManagementButton")?.addEventListener("click", () => {
+    window.location.href = "/admin/users"
+})
+
+document.getElementById("logoutButton")?.addEventListener("click", async () => {
+    await fetch("/logout", { method: "POST" })
+
+    window.location.href = "/"
+})
+
 document.getElementById("completeSession").addEventListener("click", async () => {
         const confirmed = confirm("Are you sure you want to complete this session?");
 
@@ -250,79 +260,6 @@ document.getElementById("completeSession").addEventListener("click", async () =>
             alert(result.message)
         }
 });
-
-/*
-if (window.location.pathname === "/dashboard"){
-    window.addEventListener("beforeunload", () => {
-        navigator.sendBeacon("/logout")
-    })
-}
-*/
-
-/*
-async function refreshBenchStatuses() {
-    try{
-        const response = await fetch("/inspection-status")
-        const data = await response.json()
-
-        data.forEach(record => {
-            const button = document.querySelector(`.bench[data-id="${record.bench_id}"]`)
-
-            if (!button) return
-
-            button.classList.remove("pending", "pass", "fail")
-
-            if (record.result === "PASS") {
-                button.classList.add("pass")
-            } else if (record.result === "FAIL") {
-                button.classList.add("fail")
-            } else {
-                button.classList.add("pending")
-            }
-        })
-    } catch (err) {
-        console.error("Status refresh failed", err)
-    }
-}
-
-
-
-async function refreshLocks() {
-
-    const response =
-        await fetch("/lock-status");
-
-    const locks =
-        await response.json();
-
-    document.querySelectorAll(".bench")
-        .forEach(button => {
-
-            button.classList.remove(
-                "locked"
-            );
-
-        });
-
-    locks.forEach(lock => {
-
-        const button =
-            document.querySelector(
-                `.bench[data-id="${lock.bench_id}"]`
-            );
-
-        if (button) {
-
-            button.classList.add(
-                "locked"
-            );
-
-        }
-
-    });
-
-}
-*/
 
 async function sendHeartbeat() {
     await fetch("/heartbeat", { method: "POST" });

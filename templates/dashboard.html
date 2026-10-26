@@ -8,6 +8,12 @@
 <body>
 
 <h2>Test Bench Test Logger</h2>
+<button id="logoutButton">Logout</button>
+
+{% if session.get("is_admin") %}
+<button id="userManagementButton">User Management</button>
+{% endif %}
+
 
 <!--
 <div class="active-users">
@@ -17,12 +23,6 @@
     </span>
 </div>
 -->
-
-{% if session.get("is_admin") %}
-
-<a href="/admin/users">User Management</a>
-
-{% endif %}
 
 <div class="progress-container">
     <div class="progress-header">
@@ -162,10 +162,10 @@
 
 <!-- 
 admin user management page
-
+    block delete and toggle admin if user = self
+    
 offer a change password for first login
 
-add authorised users (just initials for now)
 
 warn second user if a session is in progress
 

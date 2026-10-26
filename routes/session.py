@@ -35,15 +35,16 @@ def heartbeat():
 
 @session_bp.route("/logout", methods=["POST"])
 def logout():
-    user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
+    if "session_id" in session and "user_id" in session:
+        user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
-    if user:
-        db.session.delete(user)
-        db.session.commit()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
 
-    session.clear()
-    
-    return "", 204
+        session.clear()
+        
+        return "", 204
 
 
 @session_bp.route("/dashboard")
