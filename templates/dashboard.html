@@ -9,12 +9,14 @@
 
 <h2>Test Bench Test Logger</h2>
 
+<!--
 <div class="active-users">
     Active Users:
     <span id="activeUsersList">
         {{ active_users | map(attribute='initials') | join(', ') }}
     </span>
 </div>
+-->
 
 <div class="progress-container">
     <div class="progress-header">
@@ -34,13 +36,9 @@
 <div id="factory-floor">
 
 {% for row in layout %}
-
     <div class="floor-row">
-
     {% for bench in row %}
-
         {% if bench %}
-
             {% set result = bench_results.get(bench.id) %}
 
             <button
@@ -75,25 +73,17 @@
             <div class="gap"></div>
 
         {% endif %}
-
     {% endfor %}
-
     </div>
-
 {% endfor %}
 
 </div>
-
-<button id="completeSession">Complete Session</button>
-
+    <button id="completeSession">Complete Session</button>
 </div>
 
 <div id="inspectionModal" class="modal">
-
     <div class="modal-content">
-
         <h2 id="modalBenchTitle">Bench</h2>
-
         <div id="groundBondSection">
             <h3>Ground Bond</h3>
             <div class="button-group">
@@ -165,11 +155,15 @@
 </html>
 
 <!-- 
-add progression statistics, live counts, etc
+admin user management page
 
-add authorised users (just initials for no)
+offer a change password for first login
+
+add authorised users (just initials for now)
 
 warn second user if a session is in progress
+
+"todal already completed" if two or more sessions created in one day
 
 let user reset bench to untested
 

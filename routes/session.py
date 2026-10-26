@@ -22,20 +22,20 @@ def heartbeat():
     if "session_id" not in session:
         return jsonify({ "success": False}), 401
     
-    user = SessionUser.query.filter_by(session_id=session["session_id"], initials=session["initials"]).first()
+    user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
     if user:
         user.last_seen = datetime.now()
         db.session.commit()
 
     active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
-    socketio.emit("active_users_changed", { "users": [u.initials for u in active_users]})
+    socketio.emit("active_users_changed", { "users": [u.user.initials for u in active_users]})
 
     return jsonify({ "success": True })
 
 @session_bp.route("/logout", methods=["POST"])
 def logout():
-    user = SessionUser.query.filter_by(session_id=session["session_id"], initials=session["initials"]).first()
+    user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
     if user:
         db.session.delete(user)
@@ -52,10 +52,6 @@ def dashboard():
     is_friday = datetime.today().weekday() == 4
 
     active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
-    
-    print("Active users:")
-    for user in active_users:
-        print(user.initials, user.last_seen)
 
     total_benches = Bench.query.count()
 

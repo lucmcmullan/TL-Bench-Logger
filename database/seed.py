@@ -1,6 +1,7 @@
 from app import app
 from database.db import db
-from database.models import Bench
+from werkzeug.security import generate_password_hash
+from database.models import Bench, User
 
 from factory import FACTORY_LAYOUT
 
@@ -15,6 +16,7 @@ with app.app_context():
 
             db.session.add(Bench(id=bench["id"], name=bench["label"]))
 
+    db.session.add(User(initials="LM", name="Luc McMullan", password_hash=generate_password_hash("password"), is_admin=True))
     db.session.commit()
     
     print("test benches loaded")
