@@ -11,6 +11,8 @@ from werkzeug.security import generate_password_hash
 from database.db import db
 from database.models import User
 
+from datetime import datetime
+
 from routes.auth import valid_session_required, admin_required
 
 admin_bp = Blueprint("admin", __name__)
@@ -36,7 +38,7 @@ def create_user():
     if existing:
         return "User already exists", 400
 
-    user = User(initials=initials, name=name, password_hash=generate_password_hash(password), is_admin=False)
+    user = User(initials=initials, name=name, password_hash=generate_password_hash(password), is_admin=False, must_change_password=True)
 
     db.session.add(user)
     db.session.commit()
@@ -51,6 +53,10 @@ def reset_password(user_id):
     password = request.form["password"]
 
     user.password_hash = (generate_password_hash(password))
+
+    user.must_change_password = True
+
+    user.password_reset_at = datetime.now()
 
     db.session.commit()
 

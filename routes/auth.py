@@ -51,6 +51,10 @@ def start_session():
     if (not auth_user or not check_password_hash(auth_user.password_hash, password)):
         return "Invalid initials or password", 401
 
+    if auth_user.must_change_password:
+        session["pending_password_change"] = auth_user.id
+        return redirect("/change-password")
+    
     existing_user = session.get("initials")
 
     if existing_user and existing_user != initials:
@@ -76,3 +80,35 @@ def start_session():
     session["is_admin"] = auth_user.is_admin
 
     return redirect("/dashboard")
+
+@auth_bp.route("/change-password")
+def change_password_page():
+    if "pending_password_change" not in session:
+        return redirect("/")
+
+    return render_template("change_password.html")
+
+@auth_bp.route("/change-password", methods=["POST"])
+def change_password():
+    user_id = session.get("pending_password_change")
+
+    if not user_id:
+        return redirect("/")
+
+    password = request.form["password"]
+    confirm = request.form["confirm_password"]
+
+    if password != confirm:
+        return "Passwords do not match", 400
+
+    user = User.query.get_or_404(user_id)
+
+    user.password_hash = generate_password_hash(password)
+
+    user.must_change_password = False
+
+    db.session.commit()
+
+    session.pop("pending_password_change", None)
+
+    return redirect("/")

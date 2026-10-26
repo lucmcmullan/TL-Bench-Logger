@@ -58,7 +58,9 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    
+    must_change_password = db.Column(db.Boolean, default=True)
+    password_reset_at = db.Column(db.DateTime)
+
 class SessionUser(db.Model):
     __tablename__ = "session_users"
     user = db.relationship("User", backref="session_entries")
