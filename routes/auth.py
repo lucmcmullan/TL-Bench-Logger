@@ -61,7 +61,11 @@ def start_session():
         return f"Already logged in as {existing_user}. Please log out before switching user.", 403
 
     inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
+    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
 
+    if completed_session:
+        return "An inspection has already been completed today. A new session can be started tomorrow.", 403
+    
     if inspection_session:
         session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
 
