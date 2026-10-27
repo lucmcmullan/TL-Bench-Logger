@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from database.db import db
 from database.models import User
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 from routes.auth import valid_session_required, admin_required
 
@@ -56,7 +56,7 @@ def reset_password(user_id):
 
     user.must_change_password = True
 
-    user.password_reset_at = datetime.now()
+    user.password_reset_at = datetime.now(UTC)
 
     db.session.commit()
 

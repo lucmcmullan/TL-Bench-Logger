@@ -6,7 +6,7 @@ from database.models import *
 from constants import FACTORY_LAYOUT
 
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, UTC
 
 import shutil
 
@@ -17,7 +17,7 @@ with app.app_context():
     backup_dir.mkdir(parents=True, exist_ok=True)
 
     if db.file.exists():
-        timestamp = datetime.now().strftime("%d%m%y%H%M")
+        timestamp = datetime.now(UTC).strftime("%d%m%y%H%M")
         backup_file = (backup_dir / f"app {timestamp}.db")
         shutil.copy2(db_file, backup_file)
         print(f"DB backup created: {backup_file}")

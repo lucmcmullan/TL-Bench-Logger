@@ -6,7 +6,7 @@ from flask import(
     jsonify
 )
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from constants import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
@@ -26,10 +26,10 @@ def heartbeat():
     user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
     if user:
-        user.last_seen = datetime.now()
+        user.last_seen = datetime.now(UTC)
         db.session.commit()
 
-    active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
+    active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now(UTC) - timedelta(minutes=2)).all()
     socketio.emit("active_users_changed", { "users": [u.user.initials for u in active_users]})
 
     return jsonify({ "success": True })
@@ -53,7 +53,7 @@ def logout():
 def dashboard():
     is_friday = datetime.today().weekday() == 4
 
-    active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
+    active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now(UTC) - timedelta(minutes=2)).all())
 
     total_benches = Bench.query.count()
 
@@ -92,7 +92,7 @@ def complete_session():
         return jsonify({ "success": False, "message": f"{bench_count - inspections} benches remain untested." })
     
     current.status = "COMPLETED"
-    current.end_time = datetime.now()
+    current.end_time = datetime.now(UTC)
     
     db.session.commit()
 

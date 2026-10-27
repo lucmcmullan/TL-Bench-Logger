@@ -14,7 +14,7 @@ from flask import(
 from database.db import db
 from database.models import InspectionSession, SessionUser, User
 
-from datetime import date, datetime
+from datetime import date, datetime, UTC
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -66,7 +66,7 @@ def start_session():
         session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
 
         if not session_user:
-            active_users = SessionUser.query.filter(SessionUser.session_id == inspection_session.id, SessionUser.last_seen >= (datetime.now() - timedelta(minutes=2))).all()
+            active_users = SessionUser.query.filter(SessionUser.session_id == inspection_session.id, SessionUser.last_seen >= (datetime.now(UTC) - timedelta(minutes=2))).all()
 
             return render_template(
                 "join_session.html",
@@ -128,7 +128,7 @@ def join_session():
     session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
 
     if not session_user:
-        db.session.add(SessionUser(session_id=inspection_session.id, user_id=auth_user.id, last_seen=datetime.now()))
+        db.session.add(SessionUser(session_id=inspection_session.id, user_id=auth_user.id, last_seen=datetime.now(UTC)))
         db.session.commit()
 
     session["user_id"] = auth_user.id
