@@ -13,12 +13,12 @@ from database.models import User
 
 from datetime import datetime
 
-from routes.auth import valid_session_required, admin_required
+from routes.auth import login_required, admin_required
 
 admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/admin/users")
-@valid_session_required
+@login_required
 @admin_required
 def manage_users():
     users = User.query.order_by(User.initials).all()
@@ -26,7 +26,7 @@ def manage_users():
     return render_template("admin/users.html", users=users)
 
 @admin_bp.route("/admin/users/create", methods=["POST"])
-@valid_session_required
+@login_required
 @admin_required
 def create_user():
     initials = request.form["initials"].upper()
@@ -46,7 +46,7 @@ def create_user():
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/users/reset-password/<int:user_id>", methods=["POST"])
-@valid_session_required
+@login_required
 @admin_required
 def reset_password(user_id):
     user = User.query.get_or_404(user_id)
@@ -63,7 +63,7 @@ def reset_password(user_id):
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/users/toggle-admin/<int:user_id>")
-@valid_session_required
+@login_required
 @admin_required
 def toggle_admin(user_id):
     if user_id == session["user_id"]:
@@ -78,7 +78,7 @@ def toggle_admin(user_id):
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/users/delete/<int:user_id>")
-@valid_session_required
+@login_required
 @admin_required
 def delete_user(user_id):
     if user_id == session["user_id"]:

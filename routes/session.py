@@ -6,11 +6,11 @@ from flask import(
     jsonify
 )
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from constants import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
-from routes.auth import valid_session_required
+from routes.auth import login_required
 from socketio_instance import socketio
 
 from constants import NO_CELL_PREFIX
@@ -18,7 +18,7 @@ from constants import NO_CELL_PREFIX
 session_bp = Blueprint("session", __name__)
 
 @session_bp.route("/heartbeat", methods=["POST"])
-@valid_session_required
+@login_required
 def heartbeat():
     if "session_id" not in session:
         return jsonify({ "success": False}), 401
@@ -49,8 +49,11 @@ def logout():
 
 
 @session_bp.route("/dashboard")
-@valid_session_required
+@login_required
 def dashboard():
+    if "session_id" not in session:
+        return redirect("/menu")
+     
     is_friday = datetime.today().weekday() == 4
 
     active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
@@ -81,7 +84,7 @@ def dashboard():
         inspection_details={})
 
 @session_bp.route("/complete-session", methods=["POST"])
-@valid_session_required
+@login_required
 def complete_session():
     current = InspectionSession.query.get(session["session_id"])
 
@@ -102,14 +105,14 @@ def complete_session():
     return jsonify({ "success": True })
 
 @session_bp.route("/history")
-@valid_session_required
+@login_required
 def history():
     sessions = (InspectionSession.query.order_by(InspectionSession.date.desc()).all())
 
     return render_template("history.html", sessions=sessions)
 
 @session_bp.route("/history/<int:session_id>")
-@valid_session_required
+@login_required
 def view_session(session_id):
     inspection_session = (InspectionSession.query.get_or_404(session_id))
     inspections = Inspection.query.filter_by(session_id=session_id).all()

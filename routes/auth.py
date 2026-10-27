@@ -18,21 +18,23 @@ from datetime import date, datetime
 
 auth_bp = Blueprint("auth", __name__)
 
-def valid_session_required(f):
+def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if "session_id" not in session or "initials" not in session or "user_id" not in session:
+
+        if "user_id" not in session:
             return redirect("/")
-        
+
         return f(*args, **kwargs)
-    
+
     return decorated
+
 
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get("is_admin"):
-            return redirect("/dashboard")
+            return redirect("/main")
 
         return f(*args, **kwargs)
     return decorated
@@ -60,37 +62,11 @@ def start_session():
     if existing_user and existing_user != initials:
         return f"Already logged in as {existing_user}. Please log out before switching user.", 403
 
-    inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
-    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
-
-    if completed_session:
-        return "An inspection has already been completed today. A new session can be started tomorrow.", 403
-    
-    if inspection_session:
-        session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
-
-        if not session_user:
-            active_users = SessionUser.query.filter(SessionUser.session_id == inspection_session.id, SessionUser.last_seen >= (datetime.now() - timedelta(minutes=2))).all()
-
-            return render_template(
-                "join_session.html",
-                active_users=active_users,
-                session_id=inspection_session.id,
-                user_id=auth_user.id,
-                initials=auth_user.initials
-            )
-    elif not inspection_session:
-        inspection_session = InspectionSession(initials=initials, date=date.today(), status="IN_PROGRESS")
-
-        db.session.add(inspection_session)
-        db.session.commit()
-
     session["user_id"] = auth_user.id
-    session["session_id"] = inspection_session.id
     session["initials"] = auth_user.initials
     session["is_admin"] = auth_user.is_admin
 
-    return redirect("/dashboard")
+    return redirect("/menu")
 
 @auth_bp.route("/change-password")
 def change_password_page():
@@ -122,22 +98,38 @@ def change_password():
 
     return redirect("/")
 
-@auth_bp.route("/join-session", methods=["POST"])
-def join_session():
-    user_id = request.form["user_id"]
+@auth_bp.route("/menu")
+@login_required
+def menu():
+    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
 
-    auth_user = User.query.get_or_404(user_id)
+    active_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
+
+
+    return render_template("menu.html", completed_session=completed_session, active_session=active_session)
+
+@auth_bp.route("/join-or-start-session", methods=["POST"])
+@login_required
+def join_or_start_session():
+    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
+
+    if completed_session:
+        return "A session has already been completed today", 403
 
     inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
-    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
+
+    if not inspection_session:
+        inspection_session = InspectionSession(initials=session["initials"], date=date.today(), status="IN_PROGRESS")
+
+        db.session.add(inspection_session)
+
+    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=session["user_id"].first())
 
     if not session_user:
-        db.session.add(SessionUser(session_id=inspection_session.id, user_id=auth_user.id, last_seen=datetime.now()))
+        db.session.add(SessionUser(session_id=inspection_session.id, user_id=session["user_id"], last_seen=datetime.now()))
+
         db.session.commit()
 
-    session["user_id"] = auth_user.id
     session["session_id"] = inspection_session.id
-    session["initials"] = auth_user.initials
-    session["is_admin"] = auth_user.is_admin
 
     return redirect("/dashboard")
