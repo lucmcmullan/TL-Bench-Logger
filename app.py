@@ -1,6 +1,3 @@
-#import eventlet
-#eventlet.monkey_patch()
-
 from flask import Flask
 from socketio_instance import socketio
 
@@ -12,6 +9,10 @@ from routes.auth import auth_bp
 from routes.session import session_bp
 from routes.benches import bench_bp
 from routes.admin import admin_bp
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
