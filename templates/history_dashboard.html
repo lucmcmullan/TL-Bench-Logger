@@ -2,18 +2,12 @@
 <html>
 <head>
     <title>Inspection History</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-
     <h2>Inspection History</h2>
-
     <h3>Session {{ inspection_session.date }}</h3>
-
     <a href="/history">Back to History</a>
 
     <div id="factory-floor">

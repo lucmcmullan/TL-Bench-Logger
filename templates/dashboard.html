@@ -6,27 +6,26 @@
 </head>
 
 <body>
+    <h2>Test Bench Test Logger</h2>
+    <button id="logoutButton">Logout</button>
+    <button id="historyButton">Session History</button>
 
-<h2>Test Bench Test Logger</h2>
-<button id="logoutButton">Logout</button>
-<button id="historyButton">Session History</button>
-
-{% if session.get("is_admin") %}
-<button id="userManagementButton">User Management</button>
-{% endif %}
-
+    {% if session.get("is_admin") %}
+    <button id="userManagementButton">User Management</button>
+    {% endif %}
 
 
-<!--
-<div class="active-users">
+
+    <!--
+    <div class="active-users">
     Active Users:
     <span id="activeUsersList">
         {{ active_users | map(attribute='initials') | join(', ') }}
     </span>
-</div>
--->
+    </div>
+    -->
 
-<div class="progress-container">
+    <div class="progress-container">
     <div class="progress-header" id="progressHeader">
         Progress:
         {{ completed_benches }}/{{ total_benches }}
@@ -40,11 +39,11 @@
             style="width: {{ progress_percent }}%;">
         </div>
     </div>
-</div>
+    </div>
 
-<div id="factory-floor">
+    <div id="factory-floor">
 
-{% for row in layout %}
+    {% for row in layout %}
     <div class="floor-row">
     {% for bench in row %}
         {% if bench %}
@@ -80,13 +79,13 @@
         {% endif %}
     {% endfor %}
     </div>
-{% endfor %}
+    {% endfor %}
 
-</div>
+    </div>
     <button id="completeSession">Complete Session</button>
-</div>
+    </div>
 
-<div id="inspectionModal" class="modal">
+    <div id="inspectionModal" class="modal">
     <div class="modal-content">
         <h2 id="modalBenchTitle">Bench</h2>
         <div id="groundBondSection">
@@ -137,13 +136,13 @@
             <button id="cancelInspection">Cancel</button>
         </div>
     </div>
-</div>
+    </div>
 
-<script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
+    <script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/events.js') }}"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/events.js') }}"></script>
 
 </body>
 </html>
