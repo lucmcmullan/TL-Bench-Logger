@@ -12,13 +12,13 @@ import shutil
 
 with app.app_context():
     db_file = Path("app.db")
-    backup_dir = Path("data/db_backups")
+    backup_dir = Path("data/backups")
 
     backup_dir.mkdir(parents=True, exist_ok=True)
 
-    if db.file.exists():
+    if db_file.exists():
         timestamp = datetime.now().strftime("%d%m%y%H%M")
-        backup_file = (backup_dir / f"app {timestamp}.db")
+        backup_file = (backup_dir / f"app_{timestamp}.db")
         shutil.copy2(db_file, backup_file)
         print(f"DB backup created: {backup_file}")
 
@@ -26,9 +26,6 @@ with app.app_context():
 
     BenchLock.query.delete()
     SessionUser.query.delete()
-    InspectionSession.query.delete()
-    Inspection.query.delete()
-    Bench.query.delete()
     
     for row in FACTORY_LAYOUT:
         for bench in row:

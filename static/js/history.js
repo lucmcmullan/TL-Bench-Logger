@@ -10,7 +10,7 @@ document.querySelectorAll(".bench").forEach(bench => {
             document.getElementById("historyWeekly").textContent = data.weekly_result || "N/A";
             document.getElementById("historyOverall").textContent = data.overall_result || "UNTESTED";
             document.getElementById("historyReason").textContent = data.fail_reason || "-";
-            document.getElementById("historyComments").textContent =data.comments || "-";
+            document.getElementById("historyComments").textContent = data.comments || "-";
 
             modal.style.display = "block";
     });
