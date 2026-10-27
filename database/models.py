@@ -29,7 +29,7 @@ class InspectionSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     initials = db.Column(db.String(10), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.DateTime, default=f"{defaults["InspectionSessionStartTime"]}")
+    start_time = db.Column(db.DateTime, default=datetime.utcnow())
     end_time = db.Column(db.DateTime)
     status = db.Column(db.String(20), default=defaults["InspectionSessionStatus"])
     duration_seconds = db.Column(db.Integer)

@@ -1,0 +1,18 @@
+<h2>Session Already In Progress</h2>
+
+<p>A testing session is currently active.</p>
+
+<p>Active users:</p>
+
+<ul>
+{% for user in active_users %}
+    <li>{{ user.user.initials }}</li>
+{% endfor %}
+</ul>
+
+<form action="/join-session" method="POST">
+    <input type="hidden" name="user_id" value="{{ user_id }}">
+    <button type="submit">Join Existing Session</button>
+</form>
+
+<a href="/">Cancel</a>

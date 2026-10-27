@@ -76,7 +76,7 @@ def dashboard():
         total_benches=total_benches,
         completed_benches=completed_benches,
         progress_percent=progress_percent,
-        active_users=active_users
+        active_users=active_users,
         no_cell_prefix=NO_CELL_PREFIX)
 
 @session_bp.route("/complete-session", methods=["POST"])

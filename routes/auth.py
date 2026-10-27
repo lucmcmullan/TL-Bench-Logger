@@ -1,6 +1,6 @@
 from functools import wraps
 
-from datetime import date
+from datetime import date, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask import(
@@ -62,16 +62,23 @@ def start_session():
 
     inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
 
-    if not inspection_session: 
+    if inspection_session:
+        session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
+
+        if not session_user:
+            active_users = SessionUser.query.filter(SessionUser.session_id == inspection_session.id, SessionUser.last_seen >= (datetime.now() - timedelta(minutes=2))).all()
+
+            return render_template(
+                "join_session.html",
+                active_users=active_users,
+                session_id=inspection_session.id,
+                user_id=auth_user.id,
+                initials=auth_user.initials
+            )
+    elif not inspection_session:
         inspection_session = InspectionSession(initials=initials, date=date.today(), status="IN_PROGRESS")
 
         db.session.add(inspection_session)
-        db.session.commit()
-
-    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
-
-    if not session_user:
-        db.session.add(SessionUser(session_id=inspection_session.id, user_id=auth_user.id, last_seen=datetime.now()))
         db.session.commit()
 
     session["user_id"] = auth_user.id
@@ -102,9 +109,7 @@ def change_password():
         return "Passwords do not match", 400
 
     user = User.query.get_or_404(user_id)
-
     user.password_hash = generate_password_hash(password)
-
     user.must_change_password = False
 
     db.session.commit()
@@ -112,3 +117,23 @@ def change_password():
     session.pop("pending_password_change", None)
 
     return redirect("/")
+
+@auth_bp.route("/join-session", methods=["POST"])
+def join_session():
+    user_id = request.form["user_id"]
+
+    auth_user = User.query.get_or_404(user_id)
+
+    inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
+    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=auth_user.id).first()
+
+    if not session_user:
+        db.session.add(SessionUser(session_id=inspection_session.id, user_id=auth_user.id, last_seen=datetime.now()))
+        db.session.commit()
+
+    session["user_id"] = auth_user.id
+    session["session_id"] = inspection_session.id
+    session["initials"] = auth_user.initials
+    session["is_admin"] = auth_user.is_admin
+
+    return redirect("/dashboard")

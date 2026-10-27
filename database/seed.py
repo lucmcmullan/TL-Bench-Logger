@@ -1,13 +1,16 @@
 from app import app
 from database.db import db
 from werkzeug.security import generate_password_hash
-from database.models import Bench, User
+from database.models import *
 
 from constants import FACTORY_LAYOUT
 
 with app.app_context():
-    db.drop_all()
-    db.create_all()
+    BenchLock.query.delete()
+    SessionUser.query.delete()
+    InspectionSession.query.delete()
+    Inspection.query.delete()
+    Bench.query.delete()
     
     for row in FACTORY_LAYOUT:
         for bench in row:

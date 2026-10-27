@@ -1,6 +1,7 @@
+# add return error messages
+
 defaults = {
     "BenchActive": True,
-    "InspectionSessionStartTime": "{datetime.utcnow}",
     "InspectionSessionStatus": "IN_PROGRESS"
 }
 
@@ -11,7 +12,10 @@ NO_CELL_PREFIX = {
 }
 
 FACTORY_LAYOUT = [
-    [None, {"id": 48, "label": "01", "cell": "Hi-Bar", "span": 3}],
+    [
+        None, 
+        {"id": 48, "label": "01", "cell": "Hi-Bar", "span": 3}
+        ],
     [
         {"id": 1, "label": "44", "cell": "01", "span": 1}, 
         {"id": 2, "label": "73", "cell": "02", "span": 2}, 
