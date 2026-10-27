@@ -7,7 +7,7 @@ from flask import(
 
 from routes.auth import valid_session_required
 from database.db import db
-from datetime import date, datetime, timedelta, UTC
+from datetime import date, datetime, timedelta
 from database.models import Inspection, InspectionSession, BenchLock, Bench
 
 from socketio_instance import socketio
@@ -20,27 +20,30 @@ def lock_bench():
     if "initials" not in session:
         return jsonify({ "success": False, "message": "You must be logged in to access this."}), 401
     
-    BenchLock.query.filter(BenchLock.locked_at < (datetime.now(UTC) - timedelta(minutes=2))).delete()
+    BenchLock.query.filter(BenchLock.locked_at < (datetime.now() - timedelta(minutes=2))).delete()
     db.session.commit()
     
-    data = request.json
+    data = request.get_json()
+
+    if not data or "bench_id" not in data:
+        return jsonify({ "success": False, "message": "bench_id missing" }), 400
 
     existing = BenchLock.query.filter_by(bench_id=data["bench_id"]).first()
 
     if existing:
         if existing.locked_by == session["initials"]:
-            existing.locked_at = datetime.now(UTC)
+            existing.locked_at = datetime.now()
             db.session.commit()
 
             return jsonify ({ "success": True })
         
-        if existing.locked_at < (datetime.now(UTC) - timedelta(minutes=2)):
+        if existing.locked_at < (datetime.now() - timedelta(minutes=2)):
             db.session.delete(existing)
             db.session.commit()
         else:
             return jsonify({ "success": False, "locked_by": existing.locked_by})
 
-    lock = BenchLock(bench_id=data["bench_id"], locked_by=session["initials"], locked_at=datetime.now(UTC))
+    lock = BenchLock(bench_id=data["bench_id"], locked_by=session["initials"], locked_at=datetime.now())
 
     db.session.add(lock)
     db.session.commit()

@@ -245,6 +245,10 @@ document.getElementById("logoutButton")?.addEventListener("click", async () => {
     window.location.href = "/"
 })
 
+document.getElementById("historyButton")?.addEventListener("click", async () => {
+    window.location.href = "/history"
+})
+
 document.getElementById("completeSession").addEventListener("click", async () => {
         const confirmed = confirm("Are you sure you want to complete this session?");
 

@@ -6,7 +6,7 @@ from flask import(
     jsonify
 )
 
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 from constants import FACTORY_LAYOUT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
@@ -26,10 +26,10 @@ def heartbeat():
     user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
     if user:
-        user.last_seen = datetime.now(UTC)
+        user.last_seen = datetime.now()
         db.session.commit()
 
-    active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now(UTC) - timedelta(minutes=2)).all()
+    active_users = SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all()
     socketio.emit("active_users_changed", { "users": [u.user.initials for u in active_users]})
 
     return jsonify({ "success": True })
@@ -53,7 +53,7 @@ def logout():
 def dashboard():
     is_friday = datetime.today().weekday() == 4
 
-    active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now(UTC) - timedelta(minutes=2)).all())
+    active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
 
     total_benches = Bench.query.count()
 
@@ -77,7 +77,8 @@ def dashboard():
         completed_benches=completed_benches,
         progress_percent=progress_percent,
         active_users=active_users,
-        no_cell_prefix=NO_CELL_PREFIX)
+        no_cell_prefix=NO_CELL_PREFIX,
+        inspection_details={})
 
 @session_bp.route("/complete-session", methods=["POST"])
 @valid_session_required
@@ -92,10 +93,53 @@ def complete_session():
         return jsonify({ "success": False, "message": f"{bench_count - inspections} benches remain untested." })
     
     current.status = "COMPLETED"
-    current.end_time = datetime.now(UTC)
+    current.end_time = datetime.now()
     
     db.session.commit()
 
     session.clear()
 
     return jsonify({ "success": True })
+
+@session_bp.route("/history")
+@valid_session_required
+def history():
+    sessions = (InspectionSession.query.order_by(InspectionSession.date.desc()).all())
+
+    return render_template("history.html", sessions=sessions)
+
+@session_bp.route("/history/<int:session_id>")
+@valid_session_required
+def view_session(session_id):
+    inspection_session = (InspectionSession.query.get_or_404(session_id))
+    inspections = Inspection.query.filter_by(session_id=session_id).all()
+
+    bench_results = {}
+    inspection_details = {}
+    
+    for inspection in inspections:
+        bench_results[inspection.bench_id] = (inspection.overall_result)
+        inspection_details[inspection.bench_id] = {
+        "gb_result": inspection.gb_result,
+        "ir_result": inspection.ir_result,
+        "weekly_result": inspection.weekly_result,
+        "overall_result": inspection.overall_result,
+        "fail_reason": inspection.fail_reason,
+        "comments": inspection.comments
+    }
+        
+    total_benches = Bench.query.count()
+    completed_benches = len(inspections)
+
+    progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
+    
+    return render_template(
+        "history_dashboard.html",
+        layout=FACTORY_LAYOUT,
+        bench_results=bench_results,
+        inspection_details=inspection_details,
+        inspection_session=inspection_session,
+        completed_benches=completed_benches,
+        total_benches=total_benches,
+        progress_percent=progress_percent
+    )

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Inspection History</title>
+    </head>
+
+    <body>
+        <h2>Session History</h2>
+        <table border="1">
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Started By</th>
+                <th>View</th>
+            </tr>
+
+            {% for session in sessions %}
+            <tr>
+                <td>{{ session.date }}</td>
+                <td>{{ session.status }}</td>
+                <td>{{ session.initials }}</td>
+                <td><a href="/history/{{ session.id }}">Open</a></td>
+            </tr>
+
+            {% endfor %}
+        </table>
+    </body>
+</html>

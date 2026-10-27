@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inspection History</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h2>Inspection History</h2>
+
+    <h3>Session {{ inspection_session.date }}</h3>
+
+    <a href="/history">Back to History</a>
+
+    <div id="factory-floor">
+        {% for row in layout %}
+        <div class="floor-row">
+            {% for bench in row %}
+                {% if bench %}
+                    {% set result = bench_results.get(bench.id) %}
+
+                    <button class="bench
+                        {% if result == 'PASS' %}
+                            pass
+                        {% elif result == 'FAIL' %}
+                            fail
+                        {% else %}
+                            pending
+                        {% endif %}"
+
+                        data-inspection='{{ inspection_details.get(bench.id, {}) | tojson }}'
+                        style="grid-column: span {{ bench.span }}">
+
+                        TB{{ bench.label }}<br>
+                        {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
+                            Cell {{ bench.cell }}
+                        {% else %}
+                            {{ bench.cell }}
+                        {% endif %}
+
+                    </button>
+
+                {% else %}
+
+                    <div class="gap"></div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <h2 id="historyBenchTitle"></h2>
+
+            <p><strong>Ground Bond:</strong><span id="historyGb"></span></p>
+            <p><strong>Insulation Resistance:</strong><span id="historyIr"></span></p>
+            <p><strong>Weekly Check:</strong><span id="historyWeekly"></span></p>
+            <p><strong>Overall Result:</strong><span id="historyOverall"></span></p>
+            <p><strong>Failure Reason:</strong><span id="historyReason"></span></p>
+            <p><strong>Comments:</strong><span id="historyComments"></span></p>
+
+            <button id="closeHistoryModal">Close</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/history.js') }}"></script>
+
+</body>
+</html>
