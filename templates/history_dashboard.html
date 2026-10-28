@@ -5,104 +5,106 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
 
-<body>
-    <h2>Inspection History</h2>
-    <h3>Session {{ inspection_session.date }}</h3>
-    <button id="backToHistory">Back to History</button>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
 
-    {% if session.get("is_admin") %}
-        <button id="deleteSessionButton">Delete Session</button>
-    {% endif %}
+    <body>
+        <h2>Inspection History</h2>
+        <h3>Session {{ inspection_session.date }}</h3>
+        <button id="backToHistory">Back to History</button>
 
-    <div id="factory-floor">
-        {% for row in layout %}
-        <div class="floor-row">
-            {% for bench in row %}
-                {% if bench %}
-                    {% set result = bench_results.get(bench.id) %}
+        {% if session.get("is_admin") %}
+            <button id="deleteSessionButton">Delete Session</button>
+        {% endif %}
 
-                    <button class="bench
-                        {% if result == 'PASS' %}
-                            pass
-                        {% elif result == 'FAIL' %}
-                            fail
-                        {% else %}
-                            pending
-                        {% endif %}"
+        <div id="factory-floor">
+            {% for row in layout %}
+            <div class="floor-row">
+                {% for bench in row %}
+                    {% if bench %}
+                        {% set result = bench_results.get(bench.id) %}
 
-                        data-inspection='{{ inspection_details.get(bench.id, {}) | tojson }}'
-                        style="grid-column: span {{ bench.span }}">
+                        <button class="bench
+                            {% if result == 'PASS' %}
+                                pass
+                            {% elif result == 'FAIL' %}
+                                fail
+                            {% else %}
+                                pending
+                            {% endif %}"
 
-                        TB{{ bench.label }}<br>
-                        {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
-                            Cell {{ bench.cell }}
-                        {% else %}
-                            {{ bench.cell }}
-                        {% endif %}
+                            data-inspection='{{ inspection_details.get(bench.id, {}) | tojson }}'
+                            style="grid-column: span {{ bench.span }}">
 
-                    </button>
+                            TB{{ bench.label }}<br>
+                            {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
+                                Cell {{ bench.cell }}
+                            {% else %}
+                                {{ bench.cell }}
+                            {% endif %}
 
-                {% else %}
+                        </button>
 
-                    <div class="gap"></div>
-                {% endif %}
+                    {% else %}
+
+                        <div class="gap"></div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
             {% endfor %}
 
         </div>
-        {% endfor %}
 
-    </div>
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <h2 id="historyBenchTitle"></h2>
 
-    <div id="historyModal" class="modal">
-        <div class="modal-content">
-            <h2 id="historyBenchTitle"></h2>
+                <p><strong>Ground Bond: </strong><span id="historyGb"></span></p>
+                <p><strong>Insulation Resistance: </strong><span id="historyIr"></span></p>
+                <p><strong>Weekly Check: </strong><span id="historyWeekly"></span></p>
+                <p><strong>Overall Result: </strong><span id="historyOverall"></span></p>
+                <p><strong>Failure Reason: </strong><span id="historyReason"></span></p>
+                <p><strong>Comments: </strong><span id="historyComments"></span></p>
 
-            <p><strong>Ground Bond: </strong><span id="historyGb"></span></p>
-            <p><strong>Insulation Resistance: </strong><span id="historyIr"></span></p>
-            <p><strong>Weekly Check: </strong><span id="historyWeekly"></span></p>
-            <p><strong>Overall Result: </strong><span id="historyOverall"></span></p>
-            <p><strong>Failure Reason: </strong><span id="historyReason"></span></p>
-            <p><strong>Comments: </strong><span id="historyComments"></span></p>
-
-            <button id="closeHistoryModal">Close</button>
+                <button id="closeHistoryModal">Close</button>
+            </div>
         </div>
-    </div>
 
-    <div id="deleteSessionModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h2>Delete Session</h2>
+        <div id="deleteSessionModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Delete Session</h2>
 
-            <p>This will permanently remove:</p>
-            <ul>
-                <li>All inspection records</li>
-                <li>The inspection session</li>
-            </ul>
+                <p>This will permanently remove:</p>
+                <ul>
+                    <li>All inspection records</li>
+                    <li>The inspection session</li>
+                </ul>
 
-            <p>This action cannot be undone.</p>
-            <p>Type <strong>DELETE</strong> to continue:</p>
+                <p>This action cannot be undone.</p>
+                <p>Type <strong>DELETE</strong> to continue:</p>
 
-            <input id="deleteConfirmation" type="text">
+                <input id="deleteConfirmation" type="text">
 
-            <br><br>
+                <br><br>
 
-            <button id="confirmDeleteSession" disabled>Delete Session</button>
-            <button id="cancelDeleteSession">Cancel</button>
+                <button id="confirmDeleteSession" disabled>Delete Session</button>
+                <button id="cancelDeleteSession">Cancel</button>
+            </div>
         </div>
-    </div>
 
-    <div id="deleteConfirmModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h2>Delete Inspection Record</h2>
-            <p>This action cannot be undone.</p>
-            <p>The inspection record will be permanently removed from history.</p>
+        <div id="deleteConfirmModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Delete Inspection Record</h2>
+                <p>This action cannot be undone.</p>
+                <p>The inspection record will be permanently removed from history.</p>
 
-            <button id="confirmDelete">Yes, Delete</button>
-            <button id="cancelDelete">Cancel</button>
+                <button id="confirmDelete">Yes, Delete</button>
+                <button id="cancelDelete">Cancel</button>
+            </div>
         </div>
-    </div>
 
-    <script src="{{ url_for('static', filename='js/history.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bfcacherestore.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/history.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bfcacherestore.js') }}"></script>
 
-</body>
+    </body>
 </html>
