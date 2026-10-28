@@ -11,7 +11,7 @@ from datetime import datetime
 import shutil
 
 with app.app_context():
-    db_file = Path("app.db")
+    db_file = Path("data/app.db")
     backup_dir = Path("data/backups")
 
     backup_dir.mkdir(parents=True, exist_ok=True)
@@ -32,7 +32,10 @@ with app.app_context():
             if bench is None:
                 continue
 
-            db.session.add(Bench(id=bench["id"], name=bench["label"]))
+            existing_bench = Bench.query.get(bench["id"])
+
+            if not existing_bench:
+                db.session.add(Bench(id=bench["id"], name=bench["label"]))
 
     if not User.query.filter_by(initials="LM").first():
         db.session.add(User(initials="LM", name="Luc McMullan", password_hash=generate_password_hash("password"), is_admin=True))
