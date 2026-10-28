@@ -135,31 +135,31 @@ function setResult(type, result) {
     document.getElementById("failureSection").style.display = failed ? "block" : "none";
 }
 
-document.getElementById("gbPass").addEventListener("click", () => {
+document.getElementById("gbPass")?.addEventListener("click", () => {
     setResult("groundBond", "PASS");
 });
 
-document.getElementById("gbFail").addEventListener("click", () => {
+document.getElementById("gbFail")?.addEventListener("click", () => {
     setResult("groundBond", "FAIL");
 });
 
-document.getElementById("irPass").addEventListener("click", () => {
+document.getElementById("irPass")?.addEventListener("click", () => {
     setResult("insulation", "PASS");
 });
 
-document.getElementById("irFail").addEventListener("click", () => {
+document.getElementById("irFail")?.addEventListener("click", () => {
     setResult("insulation", "FAIL");
 });
 
-document.getElementById("weeklyPass").addEventListener("click", () => {
+document.getElementById("weeklyPass")?.addEventListener("click", () => {
     setResult("weekly", "PASS");
 });
 
-document.getElementById("weeklyFail").addEventListener("click", () => {
+document.getElementById("weeklyFail")?.addEventListener("click", () => {
     setResult("weekly", "FAIL");
 });
 
-document.getElementById("cancelInspection").addEventListener("click", async () => {
+document.getElementById("cancelInspection")?.addEventListener("click", async () => {
     if (currentBench) {
 
         await fetch(
@@ -177,7 +177,7 @@ document.getElementById("cancelInspection").addEventListener("click", async () =
     currentBench = null
 });
 
-document.getElementById("saveInspection").addEventListener("click", async () => {
+document.getElementById("saveInspection")?.addEventListener("click", async () => {
     if (!NO_GROUNDBOND.includes(currentBench.innerText.trim()) && !inspectionData.groundBond) {
         alert("Select Ground Bond result");
         return;
@@ -249,7 +249,7 @@ document.getElementById("historyButton")?.addEventListener("click", async () => 
     window.location.href = "/history"
 })
 
-document.getElementById("completeSession").addEventListener("click", async () => {
+document.getElementById("completeSession")?.addEventListener("click", async () => {
         const confirmed = confirm("Are you sure you want to complete this session?");
 
         if (!confirmed) return;
@@ -268,7 +268,7 @@ document.getElementById("completeSession").addEventListener("click", async () =>
         }
 });
 
-document.getElementById("resetInspection").addEventListener("click", async () => {
+document.getElementById("resetInspection")?.addEventListener("click", async () => {
     if (!currentBench) return 
 
     await fetch(

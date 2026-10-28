@@ -2,27 +2,34 @@
 <html>
     <head>
         <title>Inspection History</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
 
     <body>
         <h2>Session History</h2>
-        <table border="1">
-            <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Started By</th>
-                <th>View</th>
-            </tr>
+        <div class="table-container">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Started By</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
 
-            {% for session in sessions %}
-            <tr>
-                <td>{{ session.date }}</td>
-                <td>{{ session.status }}</td>
-                <td>{{ session.initials }}</td>
-                <td><a href="/history/{{ session.id }}">Open</a></td>
-            </tr>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session.date }}</td>
+                        <td>{{ session.status }}</td>
+                        <td>{{ session.initials }}</td>
+                        <td><a class="table-link" href="/history/{{ session.id }}">Open</a></td>
+                    </tr>
 
-            {% endfor %}
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </body>
 </html>

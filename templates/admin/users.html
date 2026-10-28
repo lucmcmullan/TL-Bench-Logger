@@ -1,53 +1,57 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>User Management</title>
-</head>
-</html>
+    <head>
+        <title>User Management</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
 
-<body>
+    <body>
+        <h1>User Management</h1>
+        <h2>Create User</h2>
 
-<h1>User Management</h1>
+        <form action="/admin/users/create" method="POST">
+            <input name="initials" placeholder="Initials" autocomplete="off" required>
+            <input name="name" placeholder="Name" required>
+            <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
+            
+            <button type="submit" class="btn-success">Create User</button>
+        </form>
 
-<h2>Create User</h2>
+        <hr>
 
-<form action="/admin/users/create" method="POST">
-    <input name="initials" placeholder="Initials" autocomplete="off" required>
-    <input name="name" placeholder="Name" required>
-    <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
+        <div class="table-container">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Initials</th>
+                        <th>Name</th>
+                        <th>Admin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-    <button type="submit">Create User</button>
-</form>
-
-<hr>
-
-<table border="1">
-    <tr>
-        <th>Initials</th>
-        <th>Name</th>
-        <th>Admin</th>
-        <th>Actions</th>
-    </tr>
-
-    {% for user in users%}
-
-    <tr>
-        <td>{{ user.initials }} </td>
-        <td>{{ user.name }} </td>
-        <td>{{ user.is_admin }}</td>
-        <td>
-            <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
-                <input type="password" name="password" placeholder="New Password">
-                <button type="submit">Reset Password</button>
-            </form>
-            <a href="/admin/users/toggle-admin/{{ user.id }}">Toggle Admin</a>
-            <br>
-            <a href="/admin/users/delete/{{ user.id }}">Delete User</a>
-        </td>
-    </tr>
-
-    {% endfor %}
-</table>
-</body>
-
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.initials }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>
+                            {% if user.is_admin %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
+                                    <input type="password" name="password" placeholder="New Password">
+                                    <button type="submit" class="btn-primary">Reset Password</button>
+                                </form>
+                                <a class="table-link" href="/admin/users/toggle-admin/{{ user.id }}">
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
 </html>
