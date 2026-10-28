@@ -16,6 +16,35 @@ document.querySelectorAll(".bench").forEach(bench => {
     });
 });
 
+document.getElementById("backToHistory").addEventListener("click", () => {
+    window.location.href = "/history";
+});
+
 document.getElementById("closeHistoryModal").addEventListener("click", () => {
     modal.style.display = "none";
 });
+
+document.getElementById("deleteSessionButton")?.addEventListener("click", () => {
+    document.getElementById("deleteSessionModal").style.display = "block";
+    }
+);
+
+document.getElementById("cancelDeleteSession").addEventListener("click", () => {
+    document.getElementById("deleteSessionModal").style.display = "none";
+    }
+);
+
+document.getElementById("deleteConfirmation").addEventListener("input",() => {
+    document.getElementById("confirmDeleteSession").disabled = document.getElementById("deleteConfirmation").value !== "DELETE";
+    }
+);
+
+document.getElementById("confirmDeleteSession").addEventListener("click", async () => {
+        const response = await fetch(window.location.pathname + "/delete", { method: "POST" });
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = "/history";
+        }
+    }
+);

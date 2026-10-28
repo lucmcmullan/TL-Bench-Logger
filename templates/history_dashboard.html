@@ -8,7 +8,11 @@
 <body>
     <h2>Inspection History</h2>
     <h3>Session {{ inspection_session.date }}</h3>
-    <a href="/history">Back to History</a>
+    <button id="backToHistory">Back to History</button>
+
+    {% if session.get("is_admin") %}
+        <button id="deleteSessionButton">Delete Session</button>
+    {% endif %}
 
     <div id="factory-floor">
         {% for row in layout %}
@@ -61,6 +65,39 @@
             <p><strong>Comments: </strong><span id="historyComments"></span></p>
 
             <button id="closeHistoryModal">Close</button>
+        </div>
+    </div>
+
+    <div id="deleteSessionModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>Delete Session</h2>
+
+            <p>This will permanently remove:</p>
+            <ul>
+                <li>All inspection records</li>
+                <li>The inspection session</li>
+            </ul>
+
+            <p>This action cannot be undone.</p>
+            <p>Type <strong>DELETE</strong> to continue:</p>
+
+            <input id="deleteConfirmation" type="text">
+
+            <br><br>
+
+            <button id="confirmDeleteSession" disabled>Delete Session</button>
+            <button id="cancelDeleteSession">Cancel</button>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>Delete Inspection Record</h2>
+            <p>This action cannot be undone.</p>
+            <p>The inspection record will be permanently removed from history.</p>
+
+            <button id="confirmDelete">Yes, Delete</button>
+            <button id="cancelDelete">Cancel</button>
         </div>
     </div>
 

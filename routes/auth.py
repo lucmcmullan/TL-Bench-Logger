@@ -29,7 +29,6 @@ def login_required(f):
 
     return decorated
 
-
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -123,7 +122,7 @@ def join_or_start_session():
 
         db.session.add(inspection_session)
 
-    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=session["user_id"].first())
+    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=session["user_id"]).first()
 
     if not session_user:
         db.session.add(SessionUser(session_id=inspection_session.id, user_id=session["user_id"], last_seen=datetime.now()))

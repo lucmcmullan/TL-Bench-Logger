@@ -146,3 +146,15 @@ def view_session(session_id):
         total_benches=total_benches,
         progress_percent=progress_percent
     )
+
+@session_bp.route("/history/<int:session_id>/delete", methods=["POST"])
+@login_required
+def delete_session(session_id):
+    if not session.get("is_admin"):
+        return jsonify({ "success": False }), 403
+
+    Inspection.query.filter_by(session_id=session_id).delete()
+    InspectionSession.query.filter_by(id=session_id).delete()
+    db.session.commit()
+
+    return jsonify({ "success": True })

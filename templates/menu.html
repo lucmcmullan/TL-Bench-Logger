@@ -13,12 +13,12 @@
         <button disabled>Session Complete</button>
     {% elif active_session %}
         <h3>A session is currently in progress.</h3>
-        <form action="/start-or-join-session" method="POST">
+        <form action="/join-or-start-session" method="POST">
             <button type="submit">Join Session</button>
         </form>
     {% else %}
         <h3>No session has been started today.</h3>
-        <form action="/start-or-join-session" method="POST">
+        <form action="/join-or-start-session" method="POST">
             <button type="submit">Start Session</button>
         </form>
     {% endif %}
