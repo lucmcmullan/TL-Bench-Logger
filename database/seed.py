@@ -25,7 +25,7 @@ with app.app_context():
     db.create_all()
 
     BenchLock.query.delete()
-    SessionUser.query.delete()
+    SessionUser.query.delete() 
     
     for row in FACTORY_LAYOUT:
         for bench in row:

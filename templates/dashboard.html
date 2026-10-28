@@ -11,7 +11,7 @@
     <button id="historyButton">Session History</button>
 
     {% if session.get("is_admin") %}
-    <button id="userManagementButton">User Management</button>
+        <button id="userManagementButton">User Management</button>
     {% endif %}
 
 
@@ -26,19 +26,36 @@
     -->
 
     <div class="progress-container">
-    <div class="progress-header" id="progressHeader">
-        Progress:
-        {{ completed_benches }}/{{ total_benches }}
-        ({{ progress_percent }}%)
-    </div>
+        <div class="progress-header" id="progressHeader">
+            Progress:
+            {{ completed_benches }}/{{ total_benches }}
+            ({{ progress_percent }}%)
+        </div>
 
-    <div class="progress-bar">
-        <div
-            id="progressFill"
-            class="progress-fill"
-            style="width: {{ progress_percent }}%;">
+        <div class="progress-bar">
+            <div
+                id="progressFill"
+                class="progress-fill"
+                style="width: {{ progress_percent }}%;">
+            </div>
         </div>
     </div>
+    <div class="legend">
+        <div class="legend-item">
+            <span class="legend-box pass"></span>Passed
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box fail"></span>Failed
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box locked"></span>Being Tested
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box pending"></span>Untested
+        </div>
     </div>
 
     <div id="factory-floor">
@@ -147,12 +164,34 @@
 </body>
 </html>
 
-<!-- 
-add export history 
-    month and year selection - greyed out if no entries/future date
-    export to a human readable, at-a-glance file (txt or csv??)
+<!--
+add css styling for buttons to make them more obvious, use them universally
+
+dark mode
+
+about page
+    - version
+    - db version
+    - build date
+    - uptime, etc
+
+enable/disable users instead of deleting
+
+add session comment once user presses "complete session"
 
 add automatic db backups
+
+audit trace for benches
+    - display tested by
+
+system healthcheck /health
+    - db status
+    - server status
+    - active users
+
+layout check for empty/spare benches with no TB number,
+    as not all benches are testable
+    same for stores racking, add them as placeholders
 
 session lasts for the day
     if the day finishes and the session is unfinished, still logs it as unfinished
@@ -160,11 +199,27 @@ session lasts for the day
     
     the session should only complete early if the user presses "complete session"
 
+ETA finish (based on inspection completion rate, number of users, etc)
 
-add legend
-    green passed
-    red failed
-    blue being tested
-    grey not tested
+live activity feed (navigate from menu)
+    - XX:XX initial tested TBXX PASS/FAIL in session_id
+    - XX:XX initial started/completed session_id
+
+global live status
+    - total sessions
+    - failed/passed inspections
+    - pass rate
+    - inspection rate (%age of sessions completed in a given time)
+
+add export history 
+    month and year selection - greyed out if no entries/future date
+    export to a human readable, at-a-glance file (txt, csv, pdf??)
+
+mobile layout support
+
+bench management map
+    - allow administrator to "drag & drop" benches, enable/disable benches, etc
+    - add factory layout to db instead of FACTORY_LAYOUT?
+    - utilise x, y values currently held by bench model
 
 -->
