@@ -87,7 +87,9 @@ def dashboard():
 @session_bp.route("/complete-session", methods=["POST"])
 @login_required
 def complete_session():
-    current = InspectionSession.query.get(session["session_id"])
+    current = db.session.get(InspectionSession, session["session_id"])
+    if not current:
+        return jsonify({ "success": False, "message": "Session not found." }), 404
 
     inspections = Inspection.query.filter_by(session_id=session["session_id"]).count()
 

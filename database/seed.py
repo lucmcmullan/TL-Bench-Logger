@@ -32,7 +32,7 @@ with app.app_context():
             if bench is None:
                 continue
 
-            existing_bench = Bench.query.get(bench["id"])
+            existing_bench = db.session.get(Bench, bench["id"])
 
             if not existing_bench:
                 db.session.add(Bench(id=bench["id"], name=bench["label"]))
