@@ -44,7 +44,7 @@ document.getElementById("confirmDeleteSession").addEventListener("click", async 
         const result = await response.json();
 
         if (result.success) {
-            window.location.href = "/history";
+            window.location.replace("/history")
         }
     }
 );

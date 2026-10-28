@@ -3,7 +3,8 @@ from flask import(
     render_template,
     redirect,
     session,
-    jsonify
+    jsonify,
+    make_response
 )
 
 from datetime import datetime, timedelta, date
@@ -135,17 +136,20 @@ def view_session(session_id):
     completed_benches = len(inspections)
 
     progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
-    
-    return render_template(
-        "history_dashboard.html",
-        layout=FACTORY_LAYOUT,
-        bench_results=bench_results,
-        inspection_details=inspection_details,
-        inspection_session=inspection_session,
-        completed_benches=completed_benches,
-        total_benches=total_benches,
-        progress_percent=progress_percent
-    )
+
+    response = make_response(render_template(
+            "history_dashboard.html",
+            layout=FACTORY_LAYOUT,
+            bench_results=bench_results,
+            inspection_details=inspection_details,
+            inspection_session=inspection_session,
+            completed_benches=completed_benches,
+            total_benches=total_benches,
+            progress_percent=progress_percent
+        ))
+    response.headers["Cache-Control"] = ("no-store, no-cache, must-revalidate, max-age=0")
+  
+    return response
 
 @session_bp.route("/history/<int:session_id>/delete", methods=["POST"])
 @login_required
