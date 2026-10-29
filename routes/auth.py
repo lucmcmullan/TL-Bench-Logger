@@ -139,12 +139,12 @@ def join_or_start_session():
 @auth_bp.route("/about")
 @login_required
 def about():
-    uptime = datetime.now() - START_TIME
-    
+    uptime_seconds = int((datetime.now() - START_TIME).total_seconds())
+
     return render_template(
         "about.html",
         version=versioning.VERSION,
         build_date=versioning.BUILD_DATE,
         build_number=versioning.BUILD_NUMBER,
-        uptime=str(uptime).split(".")[0]
+        uptime_seconds=uptime_seconds
     )

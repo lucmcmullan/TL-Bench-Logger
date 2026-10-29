@@ -12,7 +12,21 @@
             <p><strong>Version: </strong>{{ version }}</p>
             <p><strong>Build Number: </strong>{{ build_number }}
             <p><strong>Build Date: </strong>{{ build_date }}
-            </p><p><strong>Uptime: </strong>{{ uptime }}</p>
+            <p><strong>Uptime: </strong><span id="uptime"></span></p>
+
+            <script>
+                let uptimeSeconds = {{ uptime_seconds }};
+                function updateUptime() {
+                    const hours = Math.floor(uptimeSeconds / 3600);
+                    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+                    const seconds = uptimeSeconds % 60;
+                    document.getElementById("uptime").textContent = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+                    uptimeSeconds++;
+                }
+
+                updateUptime();
+                setInterval(updateUptime, 1000);
+            </script>
         </div>
 
         <div class="info-card">
