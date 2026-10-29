@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>About TL Bench Logger</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <h2>About TL Bench Logger</h2>
+        <div class="info-card">
+            <h3>Application Information</h3>
+            <p><strong>Version: </strong>{{ version }}</p>
+            <p><strong>Build Number: </strong>{{ build_number }}
+            <p><strong>Build Date: </strong>{{ build_date }}
+            </p><p><strong>Uptime: </strong>{{ uptime }}</p>
+        </div>
+
+        <div class="info-card">
+            <h3>System</h3>
+            <p><strong>Environment: </strong>Development</p>
+            <p><strong>Database: </strong>SQLite</p>
+        </div>
+
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
+
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    </body>
+</html>

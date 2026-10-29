@@ -2,7 +2,7 @@ from flask import Flask
 from socketio_instance import socketio
 
 from config import Config
-
+from versioning import VERSION
 from database.db import db
 
 from routes.auth import auth_bp
@@ -11,7 +11,6 @@ from routes.benches import bench_bp
 from routes.admin import admin_bp
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
 app = Flask(__name__)

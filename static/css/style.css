@@ -418,6 +418,10 @@ body.dark-mode .progress-bar {
     background: #444;
 }
 
+body.dark-mode .info-card {
+    background: #2a2a2a;
+}
+
 body.dark-mode textarea,
 body.dark-mode select,
 body.dark-mode input {
@@ -425,3 +429,16 @@ body.dark-mode input {
     color: white;
     border: 1px solid #555;
 }
+
+.info-card {
+    background: white;
+
+    padding: 20px;
+    margin-bottom: 20px;
+
+    border-radius: 10px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+

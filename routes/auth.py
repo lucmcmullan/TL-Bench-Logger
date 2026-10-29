@@ -13,10 +13,13 @@ from flask import(
 
 from database.db import db
 from database.models import InspectionSession, SessionUser, User
+import versioning
 
 from datetime import date, datetime
 
 auth_bp = Blueprint("auth", __name__)
+
+START_TIME = datetime.now()
 
 def login_required(f):
     @wraps(f)
@@ -132,3 +135,16 @@ def join_or_start_session():
     session["session_id"] = inspection_session.id
 
     return redirect("/dashboard")
+
+@auth_bp.route("/about")
+@login_required
+def about():
+    uptime = datetime.now() - START_TIME
+    
+    return render_template(
+        "about.html",
+        version=versioning.VERSION,
+        build_date=versioning.BUILD_DATE,
+        build_number=versioning.BUILD_NUMBER,
+        uptime=str(uptime).split(".")[0]
+    )
