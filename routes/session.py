@@ -13,6 +13,7 @@ from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
 from routes.auth import login_required
 from socketio_instance import socketio
+from database.backup import perform_daily_backup
 
 from constants import NO_CELL_PREFIX
 
@@ -21,6 +22,8 @@ session_bp = Blueprint("session", __name__)
 @session_bp.route("/heartbeat", methods=["POST"])
 @login_required
 def heartbeat():
+    perform_daily_backup()
+    
     if "session_id" not in session:
         return jsonify({ "success": False}), 401
     

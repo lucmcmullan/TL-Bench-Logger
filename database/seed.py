@@ -8,19 +8,12 @@ from constants import FACTORY_LAYOUT
 from pathlib import Path
 from datetime import datetime
 
+import backup
+
 import shutil
 
 with app.app_context():
-    db_file = Path("data/app.db")
-    backup_dir = Path("data/backups")
-
-    backup_dir.mkdir(parents=True, exist_ok=True)
-
-    if db_file.exists():
-        timestamp = datetime.now().strftime("%d%m%y%H%M")
-        backup_file = (backup_dir / f"app_{timestamp}.db")
-        shutil.copy2(db_file, backup_file)
-        print(f"DB backup created: {backup_file}")
+    backup.backup()
 
     db.create_all()
 
