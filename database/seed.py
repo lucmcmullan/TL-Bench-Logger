@@ -2,12 +2,12 @@ from app import app
 from database.db import db
 from werkzeug.security import generate_password_hash
 from database.models import *
-import backup
+from database.backup import backup
 
 from constants import FACTORY_LAYOUT
 
 with app.app_context():
-    backup.backup("Manual")
+    backup("Manual")
 
     db.create_all()
 
