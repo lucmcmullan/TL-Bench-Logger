@@ -49,10 +49,19 @@
                             <div class="table-actions">
                                 <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
                                     <input class="newPassword" type="password" name="password" placeholder="New Password">
-                                    <br>
                                     <button type="submit" class="btn-primary">Reset Password</button>
+
                                 </form>
-                                <a class="table-link" href="/admin/users/toggle-admin/{{ user.id }}">
+
+                                <button class="btn-secondary" onclick="window.location.href='/admin/users/toggle-admin/{{ user.id }}'">
+                                    {% if user.is_admin %}
+                                        Remove Admin
+                                    {% else %}
+                                        Make Admin
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
                     {% endfor %}
                 </tbody>
             </table>

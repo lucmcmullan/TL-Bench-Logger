@@ -9,10 +9,10 @@
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
         <h2>Inspection History</h2>
         <h3>Session {{ inspection_session.date }}</h3>
-        <button id="backToHistory">Back to History</button>
+        <button id="backToHistory" class="btn-secondary">Back to History</button>
 
         {% if session.get("is_admin") %}
-            <button id="deleteSessionButton">Delete Session</button>
+            <button id="deleteSessionButton" class="btn-danger">Delete Session</button>
         {% endif %}
 
         <div id="factory-floor">
