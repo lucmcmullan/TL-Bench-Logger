@@ -302,7 +302,10 @@ button:disabled {
 
 /* ----- Form Controls ----- */
 
-textarea,
+textarea {
+    width: 100%
+}
+
 select,
 input {
     width: 10%;
