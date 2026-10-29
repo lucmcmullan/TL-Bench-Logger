@@ -44,9 +44,9 @@ def logout():
             db.session.delete(user)
             db.session.commit()
 
-        session.clear()
+    session.clear()
         
-        return "", 204
+    return "", 204
 
 
 @session_bp.route("/dashboard")

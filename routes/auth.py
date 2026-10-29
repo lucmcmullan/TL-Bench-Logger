@@ -59,11 +59,8 @@ def start_session():
         session["pending_password_change"] = auth_user.id
         return redirect("/change-password")
     
-    existing_user = session.get("initials")
-
-    if existing_user and existing_user != initials:
-        return f"Already logged in as {existing_user}. Please log out before switching user.", 403
-
+    session.clear()
+    
     session["user_id"] = auth_user.id
     session["initials"] = auth_user.initials
     session["is_admin"] = auth_user.is_admin
