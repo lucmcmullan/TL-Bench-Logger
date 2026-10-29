@@ -15,6 +15,9 @@ from database.db import db
 from database.models import InspectionSession, SessionUser, User
 import versioning
 
+import json
+from pathlib import Path
+
 from datetime import date, datetime
 
 auth_bp = Blueprint("auth", __name__)
@@ -136,6 +139,14 @@ def join_or_start_session():
 @auth_bp.route("/about")
 @login_required
 def about():
+    backup_info = {"filename": "None", "backup_type": "Unknown", "created_at": "Never"}
+
+    meta_file = Path("data/backups/_last_backup.json")
+
+    if meta_file.exists():
+        with open(meta_file) as f:
+            backup_info = json.load(f)
+
     uptime_seconds = int((datetime.now() - START_TIME).total_seconds())
 
     return render_template(
@@ -143,5 +154,6 @@ def about():
         version=versioning.VERSION,
         build_date=versioning.BUILD_DATE,
         build_number=versioning.BUILD_NUMBER,
-        uptime_seconds=uptime_seconds
+        uptime_seconds=uptime_seconds,
+        backup_info=backup_info
     )

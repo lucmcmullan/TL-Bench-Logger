@@ -1,8 +1,8 @@
 from pathlib import Path
 from datetime import datetime
-import shutil 
+import shutil, json
 
-def backup():
+def backup(btype: str = "Automatic"):
     db_file = Path("data/app.db")
     backup_dir = Path("data/backups")
 
@@ -19,6 +19,15 @@ def backup():
         return
 
     shutil.copy2(db_file, backup_file)
+
+    meta = {
+        "filename": backup_file.name,
+        "backup_type": btype,
+        "backed_up_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    with open(backup_dir / "_last_backup.json", "w") as f:
+        json.dump(meta, f, indent=4)
 
     print(f"DB backup created: {backup_file}")
 

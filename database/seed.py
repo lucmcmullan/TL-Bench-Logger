@@ -2,18 +2,12 @@ from app import app
 from database.db import db
 from werkzeug.security import generate_password_hash
 from database.models import *
+import backup
 
 from constants import FACTORY_LAYOUT
 
-from pathlib import Path
-from datetime import datetime
-
-import backup
-
-import shutil
-
 with app.app_context():
-    backup.backup()
+    backup.backup("Manual")
 
     db.create_all()
 
