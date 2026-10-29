@@ -6,15 +6,17 @@
     </head>
     
     <body>
-        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
         <h1>User Management</h1>
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
         <h2>Create User</h2>
 
         <form action="/admin/users/create" method="POST">
             <input name="initials" placeholder="Initials" autocomplete="off" required>
+            <br>
             <input name="name" placeholder="Name" required>
+            <br>
             <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
-            
+            <br>
             <button type="submit" class="btn-success">Create User</button>
         </form>
 
@@ -46,7 +48,8 @@
                         <td>
                             <div class="table-actions">
                                 <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
-                                    <input type="password" name="password" placeholder="New Password">
+                                    <input class="newPassword" type="password" name="password" placeholder="New Password">
+                                    <br>
                                     <button type="submit" class="btn-primary">Reset Password</button>
                                 </form>
                                 <a class="table-link" href="/admin/users/toggle-admin/{{ user.id }}">
@@ -54,5 +57,7 @@
                 </tbody>
             </table>
         </div>
+
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     </body>
 </html>

@@ -6,7 +6,6 @@
     </head>
 
     <body>
-        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
         <h2>TL Bench Logger</h2>
 
         {% if completed_session %}
@@ -40,7 +39,9 @@
         <button onclick="window.location.href='/about'">About</button>
         <br><br>
         <button id="logoutButton">Logout</button>
-
+        
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     </body>
 </html>

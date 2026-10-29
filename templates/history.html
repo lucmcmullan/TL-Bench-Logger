@@ -4,10 +4,12 @@
         <title>Inspection History</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
-    
+
     <body>
-        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+        <h1>Inspection History</h1>
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
         <h2>Session History</h2>
+        
         <div class="table-container">
             <table class="app-table">
                 <thead>
@@ -31,6 +33,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <br>
         </div>
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     </body>
 </html>

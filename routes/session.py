@@ -82,7 +82,9 @@ def dashboard():
         progress_percent=progress_percent,
         active_users=active_users,
         no_cell_prefix=NO_CELL_PREFIX,
-        inspection_details={})
+        inspection_details={},
+        date=datetime.now().strftime("%d/%m/%y")
+        )
 
 @session_bp.route("/complete-session", methods=["POST"])
 @login_required

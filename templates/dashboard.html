@@ -1,137 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TL Bench Dashboard</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
 
-<body>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
-    <h2>Test Bench Test Logger</h2>
-    <div class="topbar">
-        <button id="logoutButton" class="btn-secondary">Logout</button>
-        <button id="historyButton" class="btn-primary">Session History</button>
-
-        {% if session.get("is_admin") %}
-            <button id="userManagementButton" class="btn-primary">User Management</button>
-        {% endif %}
-    </div>
-
-    <div class="progress-container">
-        <div class="progress-header" id="progressHeader">
-            Progress:
-            {{ completed_benches }}/{{ total_benches }}
-            ({{ progress_percent }}%)
-        </div>
-
-        <div class="progress-bar">
-            <div id="progressFill" class="progress-fill" style="width: {{ progress_percent }}%;"></div>
-        </div>
-    </div>
-
-    <div class="legend">
-        <div class="legend-item"><span class="legend-box pass"></span>Passed</div>
-        <div class="legend-item"><span class="legend-box fail"></span>Failed</div>
-        <div class="legend-item"><span class="legend-box locked"></span>Being Tested</div>
-        <div class="legend-item"><span class="legend-box pending"></span>Untested</div>
-    </div>
-
-    <div id="factory-floor">
-            
-        {% for row in layout %}
-        <div class="floor-row">
-        {% for bench in row %}
-            {% if bench %}
-                {% set result = bench_results.get(bench.id) %}
-
-                <button class="bench
-                    {% if result == 'PASS' %}
-                        pass
-                    {% elif result == 'FAIL' %}
-                        fail
-                    {% else %}
-                        pending
-                    {% endif %}"
-                    data-id="{{ bench.id }}"
-                    style="grid-column: span {{ bench.span }}">
-
-                    TB{{ bench.label }}<br>
-
-                    {% if bench.cell not in no_cell_prefix %}
-                        Cell {{ bench.cell }}
-                    {% else %}
-                        {{ bench.cell }}
-                    {% endif %}
-                </button>
-
-            {% else %}
-
-                <div class="gap"></div>
-
-            {% endif %}
-        {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
-
-    <div class="footer-actions">
+    <body>
+        <h1>Thorlux Lighting Bench Dashboard</h1>
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
         <button id="completeSession" class="btn-success">Complete Session</button>
-    </div>
+        
+        <h2>Current Session - {{ date }}</h2>
 
-    <div id="inspectionModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalBenchTitle">Bench</h2>
-            <div id="groundBondSection">
-                <h3>Ground Bond</h3>
-                <div class="button-group">
-                    <button type="button" id="gbPass" class="btn-success">PASS</button>
-                    <button type="button" id="gbFail" class="btn-danger">FAIL</button>
-                </div>
+        <div class="progress-container">
+            <div class="progress-header" id="progressHeader">
+                Progress:
+                {{ completed_benches }}/{{ total_benches }}
+                ({{ progress_percent }}%)
             </div>
 
-            <div id="insulationResistanceSection">
-                <h3>Insulation Resistance</h3>
-                <div class="button-group">
-                    <button type="button" id="irPass" class="btn-success">PASS</button>
-                    <button type="button" id="irFail" class="btn-danger">FAIL</button>
-                </div>
-            </div>
-
-            <div id="weeklySection">
-                <h3>Weekly Check</h3>
-                <div class="button-group">
-                    <button type="button" id="weeklyPass" class="btn-success">PASS</button>
-                    <button type="button" id="weeklyFail" class="btn-danger">FAIL</button>
-                </div>
-
-            </div>
-
-            <div id="failureSection" style="display:none;">
-
-                <h3>Failure Reason</h3>
-
-                <select id="failReason">
-                    <option value="">Select Reason</option>
-                    <option>Failed GB</option>
-                    <option>Failed IR</option>
-                    <option>Failed Weekly</option>
-                    <option>Bench Damaged/Won't Close</option>
-                    <option>Other</option>
-                </select>
-            </div>
-
-            <h3>Comments</h3>
-            <textarea id="comments" rows="4" placeholder="Optional comments..."></textarea>
-            <div class="modal-buttons">
-                <button id="saveInspection" class="btn-success">Save Inspection</button>
-                <button id="resetInspection" class="btn-danger">Reset to "Untested"</button>
-                <button id="cancelInspection" class="btn-secondary">Cancel</button>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: {{ progress_percent }}%;"></div>
             </div>
         </div>
-    </div>
 
-    <script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/events.js') }}"></script>
-    
-</body>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-box pass"></span>Passed</div>
+            <div class="legend-item"><span class="legend-box fail"></span>Failed</div>
+            <div class="legend-item"><span class="legend-box locked"></span>Being Tested</div>
+            <div class="legend-item"><span class="legend-box pending"></span>Untested</div>
+        </div>
+
+        <div id="factory-floor">
+                
+            {% for row in layout %}
+            <div class="floor-row">
+            {% for bench in row %}
+                {% if bench %}
+                    {% set result = bench_results.get(bench.id) %}
+
+                    <button class="bench
+                        {% if result == 'PASS' %}
+                            pass
+                        {% elif result == 'FAIL' %}
+                            fail
+                        {% else %}
+                            pending
+                        {% endif %}"
+                        data-id="{{ bench.id }}"
+                        style="grid-column: span {{ bench.span }}">
+
+                        TB{{ bench.label }}<br>
+
+                        {% if bench.cell not in no_cell_prefix %}
+                            Cell {{ bench.cell }}
+                        {% else %}
+                            {{ bench.cell }}
+                        {% endif %}
+                    </button>
+
+                {% else %}
+
+                    <div class="gap"></div>
+
+                {% endif %}
+            {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="inspectionModal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalBenchTitle">Bench</h2>
+                <div id="groundBondSection">
+                    <h3>Ground Bond</h3>
+                    <div class="button-group">
+                        <button type="button" id="gbPass" class="btn-success">PASS</button>
+                        <button type="button" id="gbFail" class="btn-danger">FAIL</button>
+                    </div>
+                </div>
+
+                <div id="insulationResistanceSection">
+                    <h3>Insulation Resistance</h3>
+                    <div class="button-group">
+                        <button type="button" id="irPass" class="btn-success">PASS</button>
+                        <button type="button" id="irFail" class="btn-danger">FAIL</button>
+                    </div>
+                </div>
+
+                <div id="weeklySection">
+                    <h3>Weekly Check</h3>
+                    <div class="button-group">
+                        <button type="button" id="weeklyPass" class="btn-success">PASS</button>
+                        <button type="button" id="weeklyFail" class="btn-danger">FAIL</button>
+                    </div>
+
+                </div>
+
+                <div id="failureSection" style="display:none;">
+
+                    <h3>Failure Reason</h3>
+
+                    <select id="failReason">
+                        <option value="">Select Reason</option>
+                        <option>Failed GB</option>
+                        <option>Failed IR</option>
+                        <option>Failed Weekly</option>
+                        <option>Bench Damaged/Won't Close</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <h3>Comments</h3>
+                <textarea id="comments" rows="4" placeholder="Optional comments..."></textarea>
+                <div class="modal-buttons">
+                    <button id="saveInspection" class="btn-success">Save Inspection</button>
+                    <button id="resetInspection" class="btn-danger">Reset to "Untested"</button>
+                    <button id="cancelInspection" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>const IS_FRIDAY = {{ "true" if is_friday else "false" }}</script>
+        <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+        
+    </body>
+</html>
+
 
 <!--
 add last db backup to about
