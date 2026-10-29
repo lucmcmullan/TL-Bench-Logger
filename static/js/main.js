@@ -250,10 +250,6 @@ document.getElementById("historyButton")?.addEventListener("click", async () => 
 })
 
 document.getElementById("completeSession")?.addEventListener("click", async () => {
-        const confirmed = confirm("Are you sure you want to complete this session?");
-
-        if (!confirmed) return;
-
         const response = await fetch("/complete-session", { method: "POST" });
         const result = await response.json();
 
@@ -262,7 +258,7 @@ document.getElementById("completeSession")?.addEventListener("click", async () =
                 "Session completed successfully."
             );
 
-            window.location.href = "/";
+            window.location.href = "/menu";
         } else {
             alert(result.message)
         }
