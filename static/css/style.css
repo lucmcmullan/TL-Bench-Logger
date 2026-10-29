@@ -306,6 +306,10 @@ textarea {
     width: 100%
 }
 
+.deleteText {
+    width: 100%
+}
+
 select,
 input {
     width: 10%;
@@ -317,6 +321,7 @@ input {
 .newPassword {
     width: 100%
 }
+
 /* ----- Selected States ----- */
 
 .selected-pass {
