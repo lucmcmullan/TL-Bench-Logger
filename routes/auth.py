@@ -1,7 +1,10 @@
 from functools import wraps
 
-from datetime import date, timedelta
+from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from uptime import UPTIME_FILE, init_uptime
+import atexit
 
 from flask import(
     Blueprint,
@@ -22,8 +25,17 @@ from datetime import date, datetime
 
 auth_bp = Blueprint("auth", __name__)
 
-START_TIME = datetime.now()
+START_TIME =init_uptime()
 
+@atexit.register
+def save_shutdown_time():
+    if not UPTIME_FILE.exists():
+        return
+
+    data = json.loads(UPTIME_FILE.read_text())
+    data["last_shutdown"] = (datetime.now().isoformat())
+    UPTIME_FILE.write_text(json.dumps(data, indent=4))
+    
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
