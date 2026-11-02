@@ -8,14 +8,13 @@ from flask import(
 )
 
 from datetime import datetime, timedelta, date
-from constants import FACTORY_LAYOUT
+from constants import FACTORY_LAYOUT, NO_CELL_PREFIX, DATE_FORMAT
 from database.db import db
 from database.models import Bench, Inspection, InspectionSession, SessionUser
 from routes.auth import login_required
 from socketio_instance import socketio
 from database.backup import perform_daily_backup
 
-from constants import NO_CELL_PREFIX
 
 session_bp = Blueprint("session", __name__)
 
@@ -86,7 +85,7 @@ def dashboard():
         active_users=active_users,
         no_cell_prefix=NO_CELL_PREFIX,
         inspection_details={},
-        date=datetime.now().strftime("%d/%m/%y")
+        date=datetime.now().strftime(DATE_FORMAT)
         )
 
 @session_bp.route("/complete-session", methods=["POST"])
