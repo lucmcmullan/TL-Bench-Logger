@@ -112,7 +112,7 @@ def complete_session():
 
     session.clear()
 
-    write_audit(session["initials"], "COMPLETE_SESSION", f"Session {current.id} completed")
+    write_audit(session.get("initials"), "COMPLETE_SESSION", f"Session {current.id} completed")
 
     return jsonify({ "success": True })
 

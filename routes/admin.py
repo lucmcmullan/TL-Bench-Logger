@@ -44,7 +44,7 @@ def create_user():
     db.session.add(user)
     db.session.commit()
 
-    write_audit(session["user_initials"], "CREATE_USER", f"User created: {initials}")
+    write_audit(session["initials"], "CREATE_USER", f"User created: {initials}")
 
     return redirect("/admin/users")
 
@@ -53,9 +53,8 @@ def create_user():
 @admin_required
 def reset_password(user_id):
     user = User.query.get_or_404(user_id)
-    password = request.form["password"]
 
-    user.password_hash = (generate_password_hash(password))
+    user.password_hash = generate_password_hash(user.initials)
 
     user.must_change_password = True
 
@@ -63,7 +62,7 @@ def reset_password(user_id):
 
     db.session.commit()
 
-    write_audit(session["user_initials"], "RESET_PASSWORD", f"Password reset for user: {user.initials}")
+    write_audit(session["initials"], "RESET_PASSWORD", f"Password reset for user: {user.initials}")
 
     return redirect("/admin/users")
 
@@ -78,7 +77,7 @@ def toggle_admin(user_id):
     user.is_admin = not user.is_admin
     db.session.commit()
 
-    write_audit(session["user_initials"], "TOGGLE_ADMIN", f"Admin rights toggled for user: {user.initials}")
+    write_audit(session["initials"], "TOGGLE_ADMIN", f"Admin rights toggled for user: {user.initials}")
 
     return redirect("/admin/users")
 

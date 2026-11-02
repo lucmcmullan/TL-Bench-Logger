@@ -42,11 +42,7 @@
                         <td>{% if user.is_admin %}Yes{% else %}No{% endif %}</td>
                         <td>
                             <div class="table-actions">
-                                <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
-                                    <input class="newPassword" type="password" name="password" placeholder="New Password">
-                                    <button type="submit" class="btn-primary">Reset Password</button>
-
-                                </form>
+                                <button type="submit" class="btn-secondary">Reset Password</button>
 
                                 <button class="btn-secondary" onclick="window.location.href='/admin/users/toggle-admin/{{ user.id }}'">
                                     {% if user.is_admin %}
@@ -55,6 +51,7 @@
                                         Make Admin
                                     {% endif %}
                                 </button>
+
                                 <button class="btn-secondary" onclick="window.location.href='/admin/users/toggle-enabled/{{ user.id }}'">
                                     {% if user.is_enabled %}
                                         Disable User

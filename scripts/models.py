@@ -75,7 +75,7 @@ class AuditLog(db.Model):
     __tablename__ = "audit_log"
     
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now)
     user_initials = db.Column(db.String(10), nullable=False)
     event_type = db.Column(db.String(50), nullable=False)
     message = db.Column(db.String(500), nullable=False)

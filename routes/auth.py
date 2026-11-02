@@ -73,10 +73,6 @@ def start_session():
     
     if (not auth_user or not check_password_hash(auth_user.password_hash, password)):
         return "Invalid initials or password", 401
-
-    if auth_user.must_change_password:
-        session["pending_password_change"] = auth_user.id
-        return redirect("/change-password")
     
     session.clear()
     
@@ -88,37 +84,40 @@ def start_session():
     
     return redirect("/menu")
 
-@auth_bp.route("/change-password")
-def change_password_page():
-    if "pending_password_change" not in session:
-        return redirect("/")
-
-    return render_template("change_password.html")
-
 @auth_bp.route("/change-password", methods=["POST"])
 def change_password():
-    user_id = session.get("pending_password_change")
 
-    if not user_id:
-        return redirect("/")
+    initials = request.form["initials"].upper()
 
-    password = request.form["password"]
-    confirm = request.form["confirm_password"]
+    password = request.form["new_password"]
+    confirm_password = request.form["confirm_password"]
 
-    if password != confirm:
+    if password != confirm_password:
         return "Passwords do not match", 400
 
-    user = User.query.get_or_404(user_id)
+    user = User.query.filter_by(
+        initials=initials
+    ).first_or_404()
+
     user.password_hash = generate_password_hash(password)
+
     user.must_change_password = False
 
     db.session.commit()
 
-    session.pop("pending_password_change", None)
+    session.clear()
 
-    write_audit(session["initials"], "CHANGE_PASSWORD", f"User {session['initials']} changed their password")
-    
-    return redirect("/")
+    session["user_id"] = user.id
+    session["initials"] = user.initials
+    session["is_admin"] = user.is_admin
+
+    write_audit(
+        user.initials,
+        "PASSWORD_CHANGE",
+        f"User {user.initials} changed password"
+    )
+
+    return redirect("/menu")
 
 @auth_bp.route("/menu")
 @login_required
@@ -178,3 +177,9 @@ def about():
         uptime_seconds=uptime_seconds,
         backup_info=backup_info
     )
+
+@auth_bp.route("/check-user/<initials>")
+def check_user(initials):
+    user = User.query.filter_by(initials=initials.upper()).first()
+
+    return { "exists": user is not None, "must_change_password": user.must_change_password if user else False }
