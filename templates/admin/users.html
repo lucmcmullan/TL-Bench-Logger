@@ -30,6 +30,7 @@
                         <th>Name</th>
                         <th>Admin</th>
                         <th>Actions</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
 
@@ -38,13 +39,7 @@
                     <tr>
                         <td>{{ user.initials }}</td>
                         <td>{{ user.name }}</td>
-                        <td>
-                            {% if user.is_admin %}
-                                Yes
-                            {% else %}
-                                No
-                            {% endif %}
-                        </td>
+                        <td>{% if user.is_admin %}Yes{% else %}No{% endif %}</td>
                         <td>
                             <div class="table-actions">
                                 <form action="/admin/users/reset-password/{{ user.id }}" method="POST">
@@ -60,8 +55,16 @@
                                         Make Admin
                                     {% endif %}
                                 </button>
+                                <button class="btn-secondary" onclick="window.location.href='/admin/users/toggle-enabled/{{ user.id }}'">
+                                    {% if user.is_enabled %}
+                                        Disable User
+                                    {% else %}
+                                        Enable User
+                                    {% endif %}
+                                </button>
                             </div>
                         </td>
+                        <td>{% if user.is_enabled %}Enabled{% else %}Disabled{% endif %}</td>
                     {% endfor %}
                 </tbody>
             </table>

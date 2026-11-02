@@ -250,18 +250,23 @@ document.getElementById("historyButton")?.addEventListener("click", async () => 
 })
 
 document.getElementById("completeSession")?.addEventListener("click", async () => {
-        const response = await fetch("/complete-session", { method: "POST" });
-        const result = await response.json();
+    /*
+    const comment = prompt("Optional session comment:", "");
 
-        if (result.success) {
-            alert(
-                "Session completed successfully."
-            );
+    if (comment === null) return;
+    */
+    const response = await fetch("/complete-session", { method: "POST" });
+    const result = await response.json();
 
-            window.location.href = "/menu";
-        } else {
-            alert(result.message)
-        }
+    if (result.success) {
+        alert(
+            "Session completed successfully."
+        );
+
+        window.location.href = "/menu";
+    } else {
+        alert(result.message)
+    }
 });
 
 document.getElementById("resetInspection")?.addEventListener("click", async () => {

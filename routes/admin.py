@@ -75,34 +75,32 @@ def toggle_admin(user_id):
         return "You cannot remove your own admin rights.", 400
     
     user = User.query.get_or_404(user_id)
-
     user.is_admin = not user.is_admin
-
     db.session.commit()
 
     write_audit(session["user_initials"], "TOGGLE_ADMIN", f"Admin rights toggled for user: {user.initials}")
 
     return redirect("/admin/users")
 
-@admin_bp.route("/admin/users/delete/<int:user_id>")
+@admin_bp.route("/admin/users/toggle-enabled/<int:user_id>")
 @login_required
 @admin_required
-def delete_user(user_id):
-    if user_id == session["user_id"]:
-        return "You cannot delete your own account.", 400
+def toggle_enabled(user_id):
+    user = db.session.get(User, user_id)
 
-    user = User.query.get_or_404(user_id)
+    if user.id == session["user_id"]:
+        return ("You cannot disable yourself.", 400)
 
-    db.session.delete(user)
-
+    user.is_enabled = (not user.is_enabled)
     db.session.commit()
 
-    write_audit(session["user_initials"], "DELETE_USER", f"User deleted: {user.initials}")
+    write_audit(session["initials"], "USER_STATUS", f"Enabled status toggled for user: {user.initials}")
 
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/audit-log")
 @login_required
+@admin_required
 def audit_log():
     logs = (AuditLog.query.order_by(AuditLog.timestamp.desc()).all())
     audit_text = "\n".join(f"{log.timestamp:%d/%m/%Y %H:%M:%S} - {log.event_type} - {log.user_initials} - {log.message}" for log in logs)

@@ -68,6 +68,9 @@ def start_session():
 
     auth_user = User.query.filter_by(initials=initials).first()
 
+    if not auth_user.is_enabled:
+        return "Account is disabled. Please contact an administrator.", 403
+    
     if (not auth_user or not check_password_hash(auth_user.password_hash, password)):
         return "Invalid initials or password", 401
 
