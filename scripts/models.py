@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from database.db import db
+from scripts.db import db
 
 from constants import defaults
 
@@ -35,7 +35,6 @@ class InspectionSession(db.Model):
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)
 
-
 class Inspection(db.Model):
     __tablename__ = "inspections"
     __table_args__ = (db.UniqueConstraint("session_id", "bench_id", name="uq_session_bench"),)
@@ -49,7 +48,7 @@ class Inspection(db.Model):
     overall_result = db.Column(db.String(10))
     fail_reason = db.Column(db.String(255))
     comments = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.now())
 
 class User(db.Model):
     __tablename__ = "users"
@@ -71,3 +70,11 @@ class SessionUser(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     last_seen = db.Column(db.DateTime)
     
+class AuditLog(db.Model):
+    __tablename__ = "audit_log"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    user_initials = db.Column(db.String(10), nullable=False)
+    event_type = db.Column(db.String(50), nullable=False)
+    message = db.Column(db.String(500), nullable=False)

@@ -6,11 +6,12 @@ from flask import(
 )
 
 from routes.auth import login_required
-from database.db import db
+from scripts.db import db
 from datetime import date, datetime, timedelta
-from database.models import Inspection, InspectionSession, BenchLock, Bench
+from scripts.models import Inspection, InspectionSession, BenchLock, Bench
 
-from socketio_instance import socketio
+from utils.audit import write_audit
+from utils.socketio_instance import socketio
 
 bench_bp = Blueprint("bench", __name__)
 
@@ -125,6 +126,8 @@ def inspect_bench():
     socketio.emit("bench_updated", {"bench_id": data["bench_id"], "result": overall})
     socketio.emit("lock_changed", {"bench_id": data["bench_id"], "locked": False})
 
+    write_audit(session["initials"], "INSPECT_BENCH", f"Bench {data['bench_id']} inspected with result: {overall}")
+
     return jsonify({ "success": True, "overall": overall })
 
 @bench_bp.route("/inspection-status")
@@ -145,6 +148,8 @@ def reset_inspection():
         db.session.delete(inspection)
 
         db.session.commit()
+
+        write_audit(session["initials"], "RESET_INSPECTION", f"Inspection reset for bench: {data['bench_id']}")
 
         return jsonify({ "success": True })
 

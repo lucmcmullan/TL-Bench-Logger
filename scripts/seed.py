@@ -1,8 +1,8 @@
 from app import app
-from database.db import db
+from scripts.db import db
 from werkzeug.security import generate_password_hash
-from database.models import *
-from database.backup import backup
+from scripts.models import *
+from utils.backup import backup
 
 from constants import FACTORY_LAYOUT
 

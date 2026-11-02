@@ -1,9 +1,9 @@
 from flask import Flask
-from socketio_instance import socketio
+from utils.socketio_instance import socketio
 
 from config import Config
-from versioning import VERSION
-from database.db import db
+from utils.versioning import VERSION
+from scripts.db import db
 
 from routes.auth import auth_bp
 from routes.session import session_bp
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     
 # re-seed database after changing model:
 # delete app.db
-# run python -m database.seed 
+# run python -m scripts.seed 

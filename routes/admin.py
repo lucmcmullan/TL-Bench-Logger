@@ -8,10 +8,11 @@ from flask import (
 
 from werkzeug.security import generate_password_hash
 
-from database.db import db
-from database.models import User
+from scripts.db import db
+from scripts.models import AuditLog, User
 
 from datetime import datetime
+from utils.audit import write_audit
 
 from routes.auth import login_required, admin_required
 
@@ -43,6 +44,8 @@ def create_user():
     db.session.add(user)
     db.session.commit()
 
+    write_audit(session["user_initials"], "CREATE_USER", f"User created: {initials}")
+
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/users/reset-password/<int:user_id>", methods=["POST"])
@@ -60,6 +63,8 @@ def reset_password(user_id):
 
     db.session.commit()
 
+    write_audit(session["user_initials"], "RESET_PASSWORD", f"Password reset for user: {user.initials}")
+
     return redirect("/admin/users")
 
 @admin_bp.route("/admin/users/toggle-admin/<int:user_id>")
@@ -74,6 +79,8 @@ def toggle_admin(user_id):
     user.is_admin = not user.is_admin
 
     db.session.commit()
+
+    write_audit(session["user_initials"], "TOGGLE_ADMIN", f"Admin rights toggled for user: {user.initials}")
 
     return redirect("/admin/users")
 
@@ -90,5 +97,14 @@ def delete_user(user_id):
 
     db.session.commit()
 
+    write_audit(session["user_initials"], "DELETE_USER", f"User deleted: {user.initials}")
+
     return redirect("/admin/users")
 
+@admin_bp.route("/admin/audit-log")
+@login_required
+def audit_log():
+    logs = (AuditLog.query.order_by(AuditLog.timestamp.desc()).all())
+    audit_text = "\n".join(f"{log.timestamp:%d/%m/%Y %H:%M:%S} - {log.event_type} - {log.user_initials} - {log.message}" for log in logs)
+
+    return render_template("/admin/audit_log.html", audit_text=audit_text)

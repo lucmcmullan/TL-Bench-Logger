@@ -3,7 +3,8 @@ from functools import wraps
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from uptime import UPTIME_FILE, init_uptime
+from utils.audit import write_audit
+from utils.uptime import UPTIME_FILE, init_uptime
 import atexit
 
 from flask import(
@@ -14,9 +15,9 @@ from flask import(
     session
 )
 
-from database.db import db
-from database.models import InspectionSession, SessionUser, User
-import versioning
+from scripts.db import db
+from scripts.models import InspectionSession, SessionUser, User
+import utils.versioning as versioning
 
 import json
 from pathlib import Path
@@ -80,6 +81,8 @@ def start_session():
     session["initials"] = auth_user.initials
     session["is_admin"] = auth_user.is_admin
 
+    write_audit(session["initials"], "LOGIN", f"User {session['initials']} logged in")
+    
     return redirect("/menu")
 
 @auth_bp.route("/change-password")
@@ -110,6 +113,8 @@ def change_password():
 
     session.pop("pending_password_change", None)
 
+    write_audit(session["initials"], "CHANGE_PASSWORD", f"User {session['initials']} changed their password")
+    
     return redirect("/")
 
 @auth_bp.route("/menu")
@@ -118,7 +123,6 @@ def menu():
     completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
 
     active_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
-
 
     return render_template("menu.html", completed_session=completed_session, active_session=active_session)
 
@@ -145,6 +149,8 @@ def join_or_start_session():
         db.session.commit()
 
     session["session_id"] = inspection_session.id
+
+    write_audit(session["initials"], "START_SESSION", f"User {session['initials']} joined session {inspection_session.id}")
 
     return redirect("/dashboard")
 

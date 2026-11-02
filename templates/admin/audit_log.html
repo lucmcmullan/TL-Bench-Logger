@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Audit Log</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <h2>Audit Log</h2>
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
+        <br><br>
+        <textarea readonly class="audit-log">{{ audit_text }}</textarea>
+
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    </body>
+</html>

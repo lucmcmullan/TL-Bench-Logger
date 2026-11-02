@@ -9,11 +9,12 @@ from flask import(
 
 from datetime import datetime, timedelta, date
 from constants import FACTORY_LAYOUT, NO_CELL_PREFIX, DATE_FORMAT
-from database.db import db
-from database.models import Bench, Inspection, InspectionSession, SessionUser
+from scripts.db import db
+from scripts.models import Bench, Inspection, InspectionSession, SessionUser
 from routes.auth import login_required
-from socketio_instance import socketio
-from database.backup import perform_daily_backup
+from utils.audit import write_audit
+from utils.socketio_instance import socketio
+from utils.backup import perform_daily_backup
 
 
 session_bp = Blueprint("session", __name__)
@@ -47,7 +48,9 @@ def logout():
             db.session.commit()
 
     session.clear()
-        
+
+    write_audit(session["initials"], "LOGOUT", f"User {session['initials']} logged out")
+    
     return "", 204
 
 
@@ -109,6 +112,8 @@ def complete_session():
 
     session.clear()
 
+    write_audit(session["initials"], "COMPLETE_SESSION", f"Session {current.id} completed")
+
     return jsonify({ "success": True })
 
 @session_bp.route("/history")
@@ -166,5 +171,7 @@ def delete_session(session_id):
     Inspection.query.filter_by(session_id=session_id).delete()
     InspectionSession.query.filter_by(id=session_id).delete()
     db.session.commit()
+
+    write_audit(session["initials"], "DELETE_SESSION", f"Session {session_id} deleted")
 
     return jsonify({ "success": True })
