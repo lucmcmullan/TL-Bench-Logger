@@ -1,5 +1,6 @@
 .env
-config.py
-data/
-*.pyc
 __pycache__/
+*.pyc
+config.py
+TODO.txt
+data/
