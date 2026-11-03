@@ -1,8 +1,11 @@
-from flask import Blueprint, redirect, render_template, current_app
+from flask import Blueprint, redirect, render_template, current_app, session
 from pathlib import Path
+from datetime import datetime
 from routes.auth import login_required, developer_required
+from utils.audit import write_audit
 from utils.backup import backup
 from scripts.models import *
+from utils.socketio_instance import socketio
 
 dev_bp = Blueprint("dev", __name__)
 
@@ -16,7 +19,6 @@ def dev_home():
 @login_required
 @developer_required
 def dev_routes():
-
     routes = []
 
     for rule in current_app.url_map.iter_rules():
@@ -29,7 +31,6 @@ def dev_routes():
 @developer_required
 def dev_backups():
     backups = []
-
     backup_dir = Path("data/backups")
 
     if backup_dir.exists():
@@ -60,3 +61,136 @@ def dev_stats():
     }
 
     return render_template("dev/stats.html", stats=stats)
+
+@dev_bp.route("/dev/test-routes")
+@login_required
+@developer_required
+def test_routes():
+    results = []
+
+    with current_app.test_client() as client:
+        for rule in current_app.url_map.iter_rules():
+            if rule.endpoint == "static":
+                continue
+
+            path = str(rule)
+
+            if "<" in path:
+                continue
+
+            try:
+                if "GET" in rule.methods:
+                    response = client.get(path)
+                elif "POST" in rule.methods:
+                    response = client.post(path)
+
+                results.append({ "route": path, "status": response.status_code })
+
+            except Exception as e:
+                results.append({ "route": path, "status": f"ERROR: {e}" })
+
+    return render_template("dev/route_test.html", results=results)
+
+@dev_bp.route("/dev/pass-all-benches")
+@login_required
+@developer_required
+def pass_all_benches():
+    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    if not current:
+        return redirect("/dashboard")
+
+    benches = Bench.query.filter_by(active=True).all()
+
+    for bench in benches:
+        inspection = Inspection.query.filter_by(session_id=current.id, bench_id=bench.id).first()
+
+        if inspection:
+            inspection.ir_result = "PASS"
+            inspection.gb_result = "PASS"
+            inspection.weekly_result = "PASS"
+            inspection.overall_result = "PASS"
+            inspection.fail_reason = None
+            inspection.comments = "This bench was passed by a developer override."
+
+        else:
+
+            db.session.add(
+                Inspection(
+                    session_id=current.id,
+                    bench_id=bench.id,
+                    ir_result="PASS",
+                    gb_result="PASS",
+                    weekly_result="PASS",
+                    overall_result="PASS",
+                    comments="This bench was passed by a developer override.",
+                    timestamp=datetime.now()
+                )
+            )
+
+    db.session.commit()
+
+    socketio.emit("inspection_refresh", { "action": "pass_all" })
+    write_audit(session["initials"], "DEV_ACTION","Pass All Benches")
+
+    return redirect("/dashboard")
+
+@dev_bp.route("/dev/fail-all-benches")
+@login_required
+@developer_required
+def fail_all_benches():
+    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    if not current:
+        return redirect("/dashboard")
+
+    benches = Bench.query.filter_by(active=True).all()
+
+    for bench in benches:
+        inspection = Inspection.query.filter_by(session_id=current.id, bench_id=bench.id).first()
+
+        if inspection:
+            inspection.ir_result = "FAIL"
+            inspection.gb_result = "FAIL"
+            inspection.weekly_result = "FAIL"
+            inspection.overall_result = "FAIL"
+            inspection.fail_reason = "Developer Override"
+            inspection.comments = "This bench was failed by a developer override."
+
+        else:
+
+            db.session.add(
+                Inspection(
+                    session_id=current.id,
+                    bench_id=bench.id,
+                    ir_result="FAIL",
+                    gb_result="FAIL",
+                    weekly_result="FAIL",
+                    overall_result="FAIL",
+                    fail_reason="Developer Override",
+                    comments="This bench was failed by a developer override.",
+                    timestamp=datetime.now()
+                )
+            )
+
+    db.session.commit()
+
+    socketio.emit("inspection_refresh", { "action": "fail_all" })
+    write_audit(session["initials"], "DEV_ACTION","Fail All Benches")
+
+    return redirect("/dashboard")
+
+@dev_bp.route("/dev/reset-all-benches")
+@login_required
+@developer_required
+def reset_all_benches():
+    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+
+    if not current:
+        return redirect("/dashboard")
+
+    Inspection.query.filter_by(session_id=current.id).delete()
+
+    db.session.commit()
+
+    write_audit(session["initials"], "DEV_ACTION", "Reset All Benches")
+
+    return redirect("/dashboard")

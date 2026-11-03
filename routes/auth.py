@@ -77,34 +77,50 @@ def login_page():
 
 @auth_bp.route("/start", methods=["POST"])
 def start_session():
-    initials = request.form["initials"].upper()
-    password = request.form["password"]
+    initials = request.form.get("initials")
+    password = request.form.get("password")
+
+    if not initials or not password:
+        return "Missing initials or password", 400
+
+    initials = initials.upper()
 
     auth_user = User.query.filter_by(initials=initials).first()
 
+    if not auth_user:
+        return "Invalid initials or password", 401
+
+    if not check_password_hash(auth_user.password_hash, password):
+        return "Invalid initials or password", 401
+
     if not auth_user.is_enabled:
         return "Account is disabled. Please contact an administrator.", 403
-    
-    if (not auth_user or not check_password_hash(auth_user.password_hash, password)):
-        return "Invalid initials or password", 401
-    
+
     session.clear()
-    
+
     session["user_id"] = auth_user.id
     session["initials"] = auth_user.initials
     session["is_admin"] = auth_user.is_admin
 
     write_audit(session["initials"], "LOGIN", f"User {session['initials']} logged in")
-    
+
     return redirect("/menu")
+
 
 @auth_bp.route("/change-password", methods=["POST"])
 def change_password():
+    initials = request.form.get("initials")
+    password = request.form.get("new_password")
+    confirm_password = request.form.get("confirm_password")
 
-    initials = request.form["initials"].upper()
+    if not initials:
+        return "Missing initials", 400
 
-    password = request.form["new_password"]
-    confirm_password = request.form["confirm_password"]
+    if not password:
+        return "Missing password", 400
+
+    if not confirm_password:
+        return "Missing confirmation password", 400
 
     if password != confirm_password:
         flash("Passwords do not match.", "error")

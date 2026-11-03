@@ -20,7 +20,6 @@ socket.on("bench_updated", data => {
     if (!button) return;
 
     button.classList.remove("pending", "pass", "fail", "locked");
-
     button.classList.add(data.result === "PASS" ? "pass" : "fail");
 });
 
@@ -30,11 +29,12 @@ socket.on("lock_changed", data => {
     if (!button) return;
 
     if (data.locked) {
-
         button.classList.add("locked");
-
     } else {
-
         button.classList.remove("locked");
     }
+});
+
+socket.on("inspection_refresh", () => {
+    location.refresh()
 });

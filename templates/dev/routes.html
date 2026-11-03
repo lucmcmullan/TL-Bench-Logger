@@ -7,6 +7,10 @@
 
     <body>
         <h1>Route Tester</h1>
+        <button onclick="window.location.href='/dev'" class="btn-secondary">Back to DevTools</button>
+        <br><br>
+        <button onclick="window.location.href='/dev/test-routes'">Test Routes</button>
+        <br><br>
         <textarea readonly class="audit-log">
         {%- for route in routes %}
         {{ route.methods }} - {{ route.path }} - {{ route.endpoint }}

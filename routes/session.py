@@ -39,6 +39,7 @@ def heartbeat():
     return jsonify({ "success": True })
 
 @session_bp.route("/logout", methods=["POST"])
+@login_required
 def logout():
     if "session_id" in session and "user_id" in session:
         user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
@@ -49,7 +50,9 @@ def logout():
 
     session.clear()
 
-    write_audit(session["initials"], "LOGOUT", f"User {session['initials']} logged out")
+    initials = session.get("initials", "SYSTEM")
+
+    write_audit(initials, "LOGOUT", f"User {session['initials']} logged out")
     
     return "", 204
 
@@ -113,7 +116,7 @@ def complete_session():
 
     session.clear()
 
-    write_audit(session["initials"], "COMPLETE_SESSION", f"Session {current.id} completed by {session.get('initials')}")
+    write_audit(session.get("initials"), "COMPLETE_SESSION", f"Session {current.id} completed by {session.get('initials')}")
 
     return jsonify({ "success": True })
 

@@ -27,7 +27,7 @@ class InspectionSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     initials = db.Column(db.String(10), nullable=False)
     date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.now())
+    start_time = db.Column(db.DateTime, default=datetime.now)
     end_time = db.Column(db.DateTime)
     status = db.Column(db.String(20), default=defaults["InspectionSessionStatus"])
     duration_seconds = db.Column(db.Integer)
@@ -47,7 +47,7 @@ class Inspection(db.Model):
     overall_result = db.Column(db.String(10))
     fail_reason = db.Column(db.String(255))
     comments = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, default=datetime.now())
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
 class User(db.Model):
     __tablename__ = "users"

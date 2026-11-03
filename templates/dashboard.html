@@ -10,6 +10,15 @@
         <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
         <button id="completeSession" class="btn-success">Complete Session</button>
         
+        {% if session.get("initials") == "LM" %}
+        <h3>Developer Tools</h3>
+        <div class="table-actions">
+            <button class="btn-success" onclick="window.location.href='/dev/pass-all-benches'">Pass All Benches</button>
+            <button class="btn-danger" onclick="window.location.href='/dev/fail-all-benches'">Fail All Benches</button>
+            <button class="btn-secondary" onclick="window.location.href='/dev/reset-all-benches'">Reset All Benches</button>
+        </div>
+        {% endif %}
+
         <h2>Current Session - {{ date }}</h2>
 
         <div class="progress-container">
@@ -108,6 +117,7 @@
                         <option>Failed Weekly</option>
                         <option>Bench Damaged/Won't Close</option>
                         <option>Other</option>
+                        {% if session.get("initials") == "LM" %}<option>Developer Override</option>{% endif %}
                     </select>
                 </div>
 

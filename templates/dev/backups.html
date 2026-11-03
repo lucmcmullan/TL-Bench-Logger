@@ -7,6 +7,8 @@
 
     <body>
         <h1>Backups</h1>
+        <button onclick="window.location.href='/dev'" class="btn-secondary">Back to DevTools</button>
+        <br><br>
         <form action="/dev/create-backup" method="POST">
             <button type="submit">Create Backup</button>
         </form>
@@ -14,9 +16,9 @@
         <br>
 
         <textarea readonly class="audit-log">
-            {% for backup in backups %}
-                {{ backup.name }}
-            {% endfor %}
+        {%- for backup in backups %}
+        {{ backup.name }}
+        {%- endfor %}
         </textarea>
         
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
