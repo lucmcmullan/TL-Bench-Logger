@@ -441,13 +441,18 @@ body.dark-mode input {
     border: 1px solid #555;
 }
 
-.info-card {
-    background: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
+
+.info-card {
+    background: #2b2b2b;
+    border-radius: 12px;
+    padding: 20px;
+}
+
 
 .audit-log {
     width: 95%;
@@ -459,4 +464,16 @@ body.dark-mode input {
     padding: 10px;
     white-space: pre;
     overflow-y: auto;
+}
+
+.flash-message {
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.flash-success {
+    background-color: #2e7d32;
+    color: white;
 }

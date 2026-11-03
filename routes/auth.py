@@ -20,6 +20,7 @@ from scripts.models import InspectionSession, SessionUser, User
 import utils.versioning as versioning
 
 import json
+import psutil
 from pathlib import Path
 
 from datetime import date, datetime
@@ -159,6 +160,23 @@ def join_or_start_session():
 @auth_bp.route("/about")
 @login_required
 def about():
+    db_status = "Online"
+    try:
+        User.query.first()
+    except Exception:
+        db_status = "Offline"
+
+    memory = psutil.virtual_memory()
+
+    system_health = {
+        "db_status": db_status,
+        "cpu_percent": psutil.cpu_percent(interval=1),
+        "memory_used_mb": round(memory.used / 1024 / 1024),
+        "memory_total_mb": round(memory.total / 1024 / 1024),
+        "memory_percent": memory.percent,
+        "active_users": SessionUser.query.count()
+    }
+
     backup_info = {"filename": "None", "backup_type": "Unknown", "created_at": "Never"}
 
     meta_file = Path("data/backups/_last_backup.json")
@@ -175,7 +193,8 @@ def about():
         build_date=versioning.BUILD_DATE,
         build_number=versioning.BUILD_NUMBER,
         uptime_seconds=uptime_seconds,
-        backup_info=backup_info
+        backup_info=backup_info,
+        system_health=system_health
     )
 
 @auth_bp.route("/check-user/<initials>")

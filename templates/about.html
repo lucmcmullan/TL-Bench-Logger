@@ -7,36 +7,45 @@
 
     <body>
         <h2>About TL Bench Logger</h2>
-        
-        <div class="info-card">
-            <h3>Application Information</h3>
-            <p><strong>Version: </strong>{{ version }}</p>
-            <p><strong>Build Number: </strong>{{ build_number }}
-            <p><strong>Build Date: </strong>{{ build_date }}
-            <p><strong>Uptime: </strong><span id="uptime"></span></p>
+        <div class="about-grid">
+            <div class="info-card">
+                <h3>Application Information</h3>
+                <p><strong>Version: </strong>{{ version }}</p>
+                <p><strong>Build Number: </strong>{{ build_number }}
+                <p><strong>Build Date: </strong>{{ build_date }}
+                <p><strong>Uptime: </strong><span id="uptime"></span></p>
 
-            <script>
-                let uptimeSeconds = {{ uptime_seconds }};
-                function updateUptime() {
-                    const hours = Math.floor(uptimeSeconds / 3600);
-                    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-                    const seconds = uptimeSeconds % 60;
-                    document.getElementById("uptime").textContent = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
-                    uptimeSeconds++;
-                }
+                <script>
+                    let uptimeSeconds = {{ uptime_seconds }};
+                    function updateUptime() {
+                        const hours = Math.floor(uptimeSeconds / 3600);
+                        const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+                        const seconds = uptimeSeconds % 60;
+                        document.getElementById("uptime").textContent = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+                        uptimeSeconds++;
+                    }
 
-                updateUptime();
-                setInterval(updateUptime, 1000);
-            </script>
+                    updateUptime();
+                    setInterval(updateUptime, 1000);
+                </script>
+            </div>
+
+            <div class="info-card">
+                <h3>System</h3>
+                <p><strong>Environment: </strong>Development</p>
+                <p><strong>Database: </strong>SQLite</p>
+                <p><strong>Last Backup: </strong><code>{{ backup_info.filename }}</code> - {{ backup_info.backup_type }} @ {{backup_info.backed_up_at }}</p>
+            </div>
+            
+            <div class="info-card">
+                <h3>Server Health</h3>
+                <p><strong>Database Status: </strong>{{ system_health.db_status }}</p>
+                <p><strong>Active Users: </strong>{{ system_health.active_users }}</p>
+                <p><strong>CPU Usage: </strong>{{ system_health.cpu_percent }}%</p>
+                <p><strong>Memory Usage: </strong>{{ system_health.memory_used_mb }}MB /{{ system_health.memory_total_mb }}MB({{ system_health.memory_percent }}%)</p>
+            </div>
         </div>
-
-        <div class="info-card">
-            <h3>System</h3>
-            <p><strong>Environment: </strong>Development</p>
-            <p><strong>Database: </strong>SQLite</p>
-            <p><strong>Last Backup: </strong><code>{{ backup_info.filename }}</code> - {{ backup_info.backup_type }} @ {{backup_info.backed_up_at }}</p>
-        </div>
-
+        <br><br>
         <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
 
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>

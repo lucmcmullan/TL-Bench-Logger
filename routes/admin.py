@@ -3,7 +3,8 @@ from flask import (
     render_template,
     request,
     redirect,
-    session
+    session,
+    flash
 )
 
 from werkzeug.security import generate_password_hash
@@ -55,13 +56,12 @@ def reset_password(user_id):
     user = User.query.get_or_404(user_id)
 
     user.password_hash = generate_password_hash(user.initials)
-
     user.must_change_password = True
-
     user.password_reset_at = datetime.now()
 
     db.session.commit()
 
+    flash(f"Password for user {user.initials} has been reset.", "success")
     write_audit(session["initials"], "RESET_PASSWORD", f"Password reset for user: {user.initials}")
 
     return redirect("/admin/users")
