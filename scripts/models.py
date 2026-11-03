@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from scripts.db import db
-
 from constants import defaults
 
 class Bench(db.Model):

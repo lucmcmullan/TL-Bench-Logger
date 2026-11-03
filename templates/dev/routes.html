@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Routes - TL Bench Logger</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <h1>Route Tester</h1>
+        <textarea readonly class="audit-log">
+        {%- for route in routes %}
+        {{ route.methods }} - {{ route.path }} - {{ route.endpoint }}
+        {%- endfor %}
+        </textarea>
+
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    </body>
+</html>

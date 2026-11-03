@@ -74,9 +74,12 @@ def toggle_admin(user_id):
     if user_id == session["user_id"]:
         flash(f"You cannot remove your own admin rights.", "error")
         return redirect("/admin/users")
-    
+    elif user_id == 1:
+        flash(f"You cannot remove admin rights from the developer.", "error")
+        return redirect("/admin/users")
+
     user = User.query.get_or_404(user_id)
-    user.is_admin = not user.is_admin
+    user.is_admin = (not user.is_admin)
     db.session.commit()
 
     write_audit(session["initials"], "TOGGLE_ADMIN", f"Admin rights toggled for user: {user.initials}")
@@ -87,12 +90,14 @@ def toggle_admin(user_id):
 @login_required
 @admin_required
 def toggle_enabled(user_id):
-    user = db.session.get(User, user_id)
-
-    if user.id == session["user_id"]:
+    if user_id == session["user_id"]:
         flash(f"You cannot disable your own account.", "error")
         return redirect("/admin/users")
-
+    elif user_id == 1:
+            flash(f"You cannot disable the developer's account.", "error")
+            return redirect("/admin/users")
+    
+    user = User.query.get_or_404(user_id)
     user.is_enabled = (not user.is_enabled)
     db.session.commit()
 

@@ -13,7 +13,8 @@ from flask import(
     request,
     redirect,
     session,
-    flash
+    flash,
+    abort
 )
 
 from scripts.db import db
@@ -57,6 +58,17 @@ def admin_required(f):
             return redirect("/main")
 
         return f(*args, **kwargs)
+    return decorated
+
+def developer_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        if session.get("initials") != "LM":
+            abort(403)
+
+        return f(*args, **kwargs)
+
     return decorated
 
 @auth_bp.route("/")

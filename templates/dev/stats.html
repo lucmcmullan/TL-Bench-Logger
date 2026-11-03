@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Database Statistics</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <h1>Database Statistics</h1>
+        <div class="info-card">
+            <p><strong>Users: </strong> {{ stats.users }}</p>
+            <p><strong>Enabled Users: </strong> {{ stats.enabled_users }}</p>
+            <p><strong>Disabled Users: </strong> {{ stats.disabled_users }}</p>
+            <p><strong>Sessions: </strong> {{ stats.sessions }}</p>
+            <p><strong>Completed Sessions: </strong> {{ stats.completed_sessions }}</p>
+            <p><strong>Audit Entries: </strong> {{ stats.audits }}</p>
+            <p><strong>Bench Inspections: </strong> {{ stats.bench_inspections }}</p>
+        </div>
+        
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    </body>
+</html>

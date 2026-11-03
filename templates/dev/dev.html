@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Developer Tools - TL Bench Logger</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <h1>Developer Tools</h1>
+        <button onclick="window.location.href='/menu'">Back To Menu</button>
+        <br><br>
+        <button onclick="window.location.href='/dev/routes'">Route Tester
+        </button>
+        <br><br>
+        <button onclick="window.location.href='/dev/backups'">Backup Controls
+        </button>
+        <br><br>
+        <button onclick="window.location.href='/dev/stats'">Database Statistics
+        </button>
+
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    </body>
+</html>
