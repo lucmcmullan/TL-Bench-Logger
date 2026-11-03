@@ -34,6 +34,7 @@ class InspectionSession(db.Model):
     status = db.Column(db.String(20), default=defaults["InspectionSessionStatus"])
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)
+    completed_by = db.Column(db.String(10), nullable=True)
 
 class Inspection(db.Model):
     __tablename__ = "inspections"

@@ -104,7 +104,8 @@ def complete_session():
 
     if inspections < bench_count:
         return jsonify({ "success": False, "message": f"{bench_count - inspections} benches remain untested." })
-    
+
+    current.completed_by = session.get("initials")
     current.status = "COMPLETED"
     current.end_time = datetime.now()
     
@@ -112,7 +113,7 @@ def complete_session():
 
     session.clear()
 
-    write_audit(session.get("initials"), "COMPLETE_SESSION", f"Session {current.id} completed")
+    write_audit(session["initials"], "COMPLETE_SESSION", f"Session {current.id} completed by {session.get('initials')}")
 
     return jsonify({ "success": True })
 

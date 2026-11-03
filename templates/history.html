@@ -17,6 +17,7 @@
                         <th>Date</th>
                         <th>Status</th>
                         <th>Started By</th>
+                        <th>Completed By</th>
                         <th>View</th>
                     </tr>
                 </thead>
@@ -27,6 +28,7 @@
                         <td>{{ session.date }}</td>
                         <td>{{ session.status }}</td>
                         <td>{{ session.initials }}</td>
+                        <td>{{ session.completed_by or "-" }}</td>
                         <td><a class="table-link" href="/history/{{ session.id }}">Open</a></td>
                     </tr>
 
