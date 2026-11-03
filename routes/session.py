@@ -112,11 +112,8 @@ def complete_session():
     current.status = "COMPLETED"
     current.end_time = datetime.now()
     
-    db.session.commit()
-
-    session.clear()
-
     write_audit(session.get("initials"), "COMPLETE_SESSION", f"Session {current.id} completed by {session.get('initials')}")
+    session.pop("session_id", None)
 
     return jsonify({ "success": True })
 

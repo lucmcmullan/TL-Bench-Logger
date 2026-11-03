@@ -18,20 +18,29 @@
                         <th>Status</th>
                         <th>Started By</th>
                         <th>Completed By</th>
-                        <th>View</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for session in sessions %}
+                    {% for inspection_session in sessions %}
                     <tr>
-                        <td>{{ session.date }}</td>
-                        <td>{{ session.status }}</td>
-                        <td>{{ session.initials }}</td>
-                        <td>{{ session.completed_by or "-" }}</td>
-                        <td><a class="table-link" href="/history/{{ session.id }}">Open</a></td>
+                        <td>{{ inspection_session.date }}</td>
+                        <td>{{ inspection_session.status }}</td>
+                        <td>{{ inspection_session.initials }}</td>
+                        <td>{{ inspection_session.completed_by or "-" }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn-secondary" onclick="window.location.href='/history/{{ inspection_session.id }}'">View</button>
+                                
+                                {% if session.get("is_admin") %}
+                                <form action="/history/{{ inspection_session.id }}/delete" method="POST"></form>
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
                     </tr>
-
                     {% endfor %}
                 </tbody>
             </table>
