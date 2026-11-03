@@ -38,7 +38,8 @@ def create_user():
     existing = User.query.filter_by(initials=initials).first()
 
     if existing:
-        return "User already exists", 400
+        flash("User already exists.", "error")
+        return redirect("/admin/users")
 
     user = User(initials=initials, name=name, password_hash=generate_password_hash(password), is_admin=False, must_change_password=True)
 
@@ -71,7 +72,8 @@ def reset_password(user_id):
 @admin_required
 def toggle_admin(user_id):
     if user_id == session["user_id"]:
-        return "You cannot remove your own admin rights.", 400
+        flash(f"You cannot remove your own admin rights.", "error")
+        return redirect("/admin/users")
     
     user = User.query.get_or_404(user_id)
     user.is_admin = not user.is_admin
@@ -88,7 +90,8 @@ def toggle_enabled(user_id):
     user = db.session.get(User, user_id)
 
     if user.id == session["user_id"]:
-        return ("You cannot disable yourself.", 400)
+        flash(f"You cannot disable your own account.", "error")
+        return redirect("/admin/users")
 
     user.is_enabled = (not user.is_enabled)
     db.session.commit()

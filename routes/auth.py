@@ -12,13 +12,14 @@ from flask import(
     render_template,
     request,
     redirect,
-    session
+    session,
+    flash
 )
 
 from scripts.db import db
 from scripts.models import InspectionSession, SessionUser, User
 import utils.versioning as versioning
-
+import time
 import json
 import psutil
 from pathlib import Path
@@ -94,7 +95,8 @@ def change_password():
     confirm_password = request.form["confirm_password"]
 
     if password != confirm_password:
-        return "Passwords do not match", 400
+        flash("Passwords do not match.", "error")
+        return redirect("/")
 
     user = User.query.filter_by(
         initials=initials

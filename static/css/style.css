@@ -453,7 +453,6 @@ body.dark-mode input {
     padding: 20px;
 }
 
-
 .audit-log {
     width: 95%;
     height: 700px;
@@ -475,5 +474,10 @@ body.dark-mode input {
 
 .flash-success {
     background-color: #2e7d32;
+    color: white;
+}
+
+.flash-error {
+    background-color: #c62828;
     color: white;
 }
