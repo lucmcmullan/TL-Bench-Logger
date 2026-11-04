@@ -312,10 +312,13 @@ textarea {
 
 select,
 input {
-    width: 10%;
     box-sizing: border-box;
-
     margin-bottom: 15px;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
 }
 
 .newPassword {
@@ -480,4 +483,187 @@ body.dark-mode input {
 .flash-error {
     background-color: #c62828;
     color: white;
+}
+
+#layout-editor {
+
+    position: relative;
+
+    width: 100%;
+    height: 1200px;
+
+    border: 1px solid #555;
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    background-image:
+        linear-gradient(#333 1px, transparent 1px),
+        linear-gradient(90deg, #333 1px, transparent 1px);
+
+    background-size: 40px 40px;
+}
+
+.layout-bench {
+
+    position: absolute;
+
+    border: none;
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    background: #cccccc;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: move;
+
+    user-select: none;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+.layout-bench.inactive {
+    background: #808080;
+    opacity: 0.6;
+}
+
+.toggle-bench-btn {
+
+    margin-top: 4px;
+
+    font-size: 10px;
+}
+.resize-handle {
+    position: absolute;
+    z-index: 10;
+}
+
+.resize-top {
+    top: -3px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    cursor: ns-resize;
+}
+
+.resize-bottom {
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    cursor: ns-resize;
+}
+
+.resize-left {
+    left: -3px;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: ew-resize;
+}
+
+.resize-right {
+    right: -3px;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: ew-resize;
+}
+
+#drop-preview {
+    position: absolute;
+
+    display: none;
+
+    pointer-events: none;
+
+    background: rgba(0, 123, 255, 0.3);
+
+    border: 2px solid #007bff;
+
+    box-sizing: border-box;
+
+    z-index: 5;
+}
+
+.bench-title {
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.bench-cell {
+
+    font-size: 12px;
+    font-weight: normal;
+}
+
+
+.context-menu {
+
+    position: fixed;
+
+    display: none;
+
+    min-width: 180px;
+
+    background: #2b2b2b;
+
+    border: 1px solid #555;
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    z-index: 99999;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.4);
+}
+
+.context-item {
+
+    padding: 12px;
+
+    cursor: pointer;
+
+    color: white;
+}
+
+.context-item:hover {
+
+    background: #3b82f6;
+}
+
+.input-prefix {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-prefix span {
+    padding: 10px 12px;
+    background: #444;
+    color: white;
+    border-radius: 6px 0 0 6px;
+    font-weight: bold;
+}
+
+.input-prefix input {
+    flex: 1;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 0;
+}
+
+.benchType {
+    width: 100%;
 }

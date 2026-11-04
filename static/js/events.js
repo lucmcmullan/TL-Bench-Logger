@@ -1,5 +1,3 @@
-console.log("EVENTS.JS LOADED");
-
 const socket = io();
 
 console.log("IO TYPE:", typeof io);
@@ -13,6 +11,7 @@ socket.on("connect", () => {
 socket.on("connect_error", err => {
     console.error("CONNECT ERROR", err);
 });
+
 socket.onAny((event, data) => {
     console.log("EVENT:", event, data);
 });
@@ -55,3 +54,15 @@ socket.on("audit_log", data => {
     textarea.value = entry + "\n" + textarea.value;
     }
 );
+
+socket.on("bench_deleted", () => {
+    location.reload()
+});
+
+socket.on("bench_created", () => {
+    location.reload()
+});
+
+socket.on("bench_updated", () => {
+    location.reload()
+});

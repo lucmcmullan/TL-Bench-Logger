@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bench Management - TL Bench Logger</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <div id="benchEditModal" class="modal">
+            <div class="modal-content">
+                <h2 id="editBenchTitle">Edit Bench</h2>
+                <input type="hidden" id="editBenchId">
+                <div class="input-prefix"><span>TB</span><input type="number" id="editBenchName" min="1"></div>
+                <div class="input-prefix"><span id="cellPrefix">Cell</span><input type="text" id="editBenchCell"></div>
+                <h3>Bench Type</h3>
+                <select id="editBenchType" class="benchType">
+                    <option value="testbench">Test Bench</option>
+                    <option value="productionbench">Production Bench</option>
+                    <option value="packing">Packing</option>
+                </select>
+                <h3>Status</h3>
+                <label><input type="checkbox" id="editBenchActive">Active</label>
+                <div class="modal-buttons">
+                    <button id="saveBenchEdit" class="btn-success">Save Changes</button>
+                    <button id="cancelBenchEdit" class="btn-secondary">Cancel</button>
+                    <button id="deleteBenchEdit" class="btn-danger">Delete Bench</button>
+
+                </div>
+            </div>
+        </div>
+
+        <h1>Bench Management</h1>
+        <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
+        <br><br>
+        <div class="info-card">
+            <h2>Factory Layout Editor</h2>
+            <button id="addBenchBtn" class="btn-success">Add Bench</button>
+            <p>Drag benches to reposition them. Positions snap to the grid automatically.</p>
+
+            <div id="layout-editor">
+                <div id="drop-preview"></div>
+                {% for bench in benches %}
+
+                <div
+                    class="layout-bench bench pending"
+                    draggable="true"
+
+                    data-id="{{ bench.id }}"
+                    data-name="{{ bench.name }}"
+                    data-cell="{{ bench.cell or '' }}"
+                    data-active="{{ 'true' if bench.active else 'false' }}"
+
+                    data-x="{{ bench.x or 0 }}"
+                    data-y="{{ bench.y or 0 }}"
+                    data-width="{{ bench.width or 2 }}"
+                    data-height="{{ bench.height or 1 }}"
+
+                    style="
+                        left: {{ (bench.x or 0) * 40 }}px;
+                        top: {{ (bench.y or 0) * 40 }}px;
+                        width: {{ (bench.width or 2) * 40 }}px;
+                        height: {{ (bench.height or 1) * 40 }}px;
+                    "
+                >
+
+                    <div class="bench-title">TB{{ bench.name }}</div>
+
+                    <div class="bench-cell">
+                        {% if bench.cell %}
+                            {% if bench.cell in ["Packing", "Returns", "Hi-Bar"] %}
+                                {{ bench.cell }}
+                            {% else %}
+                                Cell {{ bench.cell }}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="resize-handle resize-top"></div>
+                    <div class="resize-handle resize-right"></div>
+                    <div class="resize-handle resize-bottom"></div>
+                    <div class="resize-handle resize-left"></div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <script src="{{ url_for('static', filename='js/bench_management.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+        <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+        <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+
+    </body>
+</html>

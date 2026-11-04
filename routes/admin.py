@@ -4,17 +4,18 @@ from flask import (
     request,
     redirect,
     session,
-    flash
+    flash,
+    jsonify
 )
 
 from werkzeug.security import generate_password_hash
 
 from scripts.db import db
-from scripts.models import AuditLog, User
+from scripts.models import AuditLog, Bench, User
 
 from datetime import datetime
 from utils.audit import write_audit
-
+from utils.socketio_instance import socketio
 from routes.auth import login_required, admin_required
 
 admin_bp = Blueprint("admin", __name__)
@@ -113,3 +114,88 @@ def audit_log():
     audit_text = "\n".join(f"{log.timestamp:%d/%m/%Y %H:%M:%S} - {log.event_type} - {log.user_initials} - {log.message}" for log in logs)
 
     return render_template("/admin/audit_log.html", audit_text=audit_text)
+
+@admin_bp.route("/admin/benches")
+@login_required
+@admin_required
+def manage_benches():
+    benches = Bench.query.order_by(Bench.id).all()
+
+    return render_template("admin/benches.html", benches=benches)
+
+@admin_bp.route("/admin/benches/update", methods=["POST"])
+@login_required
+@admin_required
+def update_bench():
+    data = request.get_json()
+    bench = Bench.query.get_or_404(data["bench_id"])
+
+    if "name" in data: 
+        bench.name = data["name"]
+
+    if "cell" in data:
+        bench.cell = data["cell"]
+
+    if "x" in data:
+        bench.x = data["x"]
+
+    if "y" in data:
+        bench.y = data["y"]
+
+    if "active" in data:
+        bench.active = data["active"]
+
+    if "width" in data:
+        bench.width = data["width"]
+
+    if "height" in data:
+        bench.height = data["height"]
+
+    if "name" in data:
+        bench.name = data["name"]
+
+    if "cell" in data:
+        bench.cell = data["cell"]
+
+    db.session.commit()
+
+    write_audit(session["initials"], "UPDATE_BENCH", f"Updated {bench.name}")
+
+    socketio.emit("bench_updated", { "bench_id": bench.id })
+    return jsonify({ "success": True })
+
+@admin_bp.route("/admin/benches/delete", methods=["POST"])
+def delete_bench():
+    data = request.get_json()
+    bench = Bench.query.get(data["bench_id"])
+
+    if not bench:
+        return jsonify({ "success": False })
+
+    db.session.delete(bench)
+    db.session.commit()
+
+    socketio.emit("bench_deleted", { "bench_id": bench.id })
+    return jsonify({ "success": True })
+
+@admin_bp.route("/admin/benches/create", methods=["POST"])
+def create_bench():
+    data = request.get_json()
+
+    highest = db.session.query(db.func.max(db.cast(Bench.name, db.Integer))).scalar() or 0
+
+    bench = Bench(
+        name=str(highest + 1),
+        cell=data["cell"],
+        x=data["x"],
+        y=data["y"],
+        width=data["width"],
+        height=data["height"],
+        active=data["active"]
+    )
+
+    db.session.add(bench)
+    db.session.commit()
+
+    socketio.emit("bench_created", { "bench_id": bench.id })
+    return jsonify(success=True, bench_id=bench.id)

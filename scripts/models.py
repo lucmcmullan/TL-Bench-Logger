@@ -7,8 +7,11 @@ class Bench(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    x = db.Column(db.Integer, nullable=True)
-    y = db.Column(db.Integer, nullable=True)
+    cell = db.Column(db.String(50), nullable=True)
+    x = db.Column(db.Integer, nullable=False)
+    y = db.Column(db.Integer, nullable=False)
+    width = db.Column(db.Integer, nullable=False, default=2)
+    height = db.Column(db.Integer, nullable=False, default=1)
     active = db.Column(db.Boolean, default=defaults["BenchActive"])
     tested_by = db.Column(db.String(10), nullable=True)
     last_modified = db.Column(db.DateTime)

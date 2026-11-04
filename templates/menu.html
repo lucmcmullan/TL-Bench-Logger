@@ -26,24 +26,28 @@
         <br><br>
         <button onclick="window.location.href='/history'">Session History</button>
         <br><br>
-        
-        {% if session.get("initials") == "LM" %}
-            <button onclick="window.location.href='/dev'">🔨 Developer Tools</button>
-            <br><br>
-        {% endif %}
-
+    
         {% if session.get("is_admin") %}
+            <h3>Admin Tools</h3>
+
             <button onclick="window.location.href='/admin/users'">User Management</button>
             <br><br>
             <button onclick="window.location.href='/admin/audit-log'">Audit Log</button>
             <br><br>
+            <button onclick="window.location.href='/admin/benches'">Bench Management</button>
+            <br><br>
         {% endif %}
-        
+
         <button id="darkModeToggle" class="btn-secondary">Toggle Dark Mode</button>
         <br><br><br><br><br><br>
         <button onclick="window.location.href='/about'">About</button>
         <br><br>
         <button id="logoutButton">Logout</button>
+        <br><br>
+        {% if session.get("initials") == "LM" %}
+            <button onclick="window.location.href='/dev'">🔨 Developer Tools</button>
+            <br><br>
+        {% endif %}
         
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
         <script>
