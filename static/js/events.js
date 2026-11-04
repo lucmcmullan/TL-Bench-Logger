@@ -1,11 +1,20 @@
+console.log("EVENTS.JS LOADED");
+
 const socket = io();
+
+console.log("IO TYPE:", typeof io);
+
+console.log("SOCKET CREATED");
 
 socket.on("connect", () => {
     console.log("CONNECTED", socket.id);
 });
 
+socket.on("connect_error", err => {
+    console.error("CONNECT ERROR", err);
+});
 socket.onAny((event, data) => {
-    console.log("EVENT RECEIVED:", event, data);
+    console.log("EVENT:", event, data);
 });
 
 socket.on("active_users_changed", data =>{
@@ -36,7 +45,7 @@ socket.on("lock_changed", data => {
 });
 
 socket.on("inspection_refresh", () => {
-    location.refresh()
+    window.location.reload()
 });
 
 socket.on("audit_log", data => {
