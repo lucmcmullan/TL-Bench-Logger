@@ -7,6 +7,8 @@
 
     <body>
         <h1>Database Statistics</h1>
+        <button onclick="window.location.href='/dev'" class="btn-secondary">Back to DevTools</button>
+        <br><br>
         <div class="info-card">
             <p><strong>Users: </strong> {{ stats.users }}</p>
             <p><strong>Enabled Users: </strong> {{ stats.enabled_users }}</p>
@@ -15,6 +17,7 @@
             <p><strong>Completed Sessions: </strong> {{ stats.completed_sessions }}</p>
             <p><strong>Audit Entries: </strong> {{ stats.audits }}</p>
             <p><strong>Bench Inspections: </strong> {{ stats.bench_inspections }}</p>
+            <p><strong>Database Filesize: </strong>{{ stats.db_filesize_mb }}MB</p>
         </div>
         
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>

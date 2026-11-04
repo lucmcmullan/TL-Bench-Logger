@@ -41,6 +41,8 @@ def heartbeat():
 @session_bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    initials = session.get("initials", "UNKNOWN")
+
     if "session_id" in session and "user_id" in session:
         user = SessionUser.query.filter_by(session_id=session["session_id"], user_id=session["user_id"]).first()
 
@@ -48,12 +50,10 @@ def logout():
             db.session.delete(user)
             db.session.commit()
 
+    write_audit(initials, "LOGOUT", f"User {initials} logged out")
+
     session.clear()
 
-    initials = session.get("initials", "SYSTEM")
-
-    write_audit(initials, "LOGOUT", f"User {session['initials']} logged out")
-    
     return "", 204
 
 

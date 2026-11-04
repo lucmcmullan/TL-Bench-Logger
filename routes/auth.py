@@ -191,6 +191,13 @@ def join_or_start_session():
 @login_required
 def about():
     db_status = "Online"
+    db_file = Path("data/app.db")
+
+    db_size_mb = 0
+
+    if db_file.exists():
+        db_size_mb = round(db_file.stat().st_size / 1024 / 1024, 2)
+
     try:
         User.query.first()
     except Exception:
@@ -204,7 +211,8 @@ def about():
         "memory_used_mb": round(memory.used / 1024 / 1024),
         "memory_total_mb": round(memory.total / 1024 / 1024),
         "memory_percent": memory.percent,
-        "active_users": SessionUser.query.count()
+        "active_users": User.query.count(),
+        "db_filesize_mb": db_size_mb
     }
 
     backup_info = {"filename": "None", "backup_type": "Unknown", "created_at": "Never"}

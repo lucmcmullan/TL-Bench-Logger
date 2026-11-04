@@ -50,6 +50,13 @@ def create_backup():
 @login_required
 @developer_required
 def dev_stats():
+    db_file = Path("data/app.db")
+    
+    db_size_mb = 0
+
+    if db_file.exists():
+        db_size_mb = round(db_file.stat().st_size / 1024 / 1024, 2)
+    
     stats = {
         "users": User.query.count(),
         "enabled_users": User.query.filter_by(is_enabled=True).count(),
@@ -57,7 +64,8 @@ def dev_stats():
         "sessions": InspectionSession.query.count(),
         "completed_sessions": InspectionSession.query.filter_by(status="COMPLETED").count(),
         "audits": AuditLog.query.count(),
-        "bench_inspections": Inspection.query.count()
+        "bench_inspections": Inspection.query.count(),
+        "db_size_mb": db_size_mb,
     }
 
     return render_template("dev/stats.html", stats=stats)

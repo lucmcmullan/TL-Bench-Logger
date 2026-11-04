@@ -38,3 +38,11 @@ socket.on("lock_changed", data => {
 socket.on("inspection_refresh", () => {
     location.refresh()
 });
+
+socket.on("audit_log", data => {
+    const textarea = document.getElementById("auditLog");
+    const entry = `${data.timestamp} - ${data.event_type} - ${data.user_initials} - ${data.message}`;
+
+    textarea.value = entry + "\n" + textarea.value;
+    }
+);

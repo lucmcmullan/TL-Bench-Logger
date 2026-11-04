@@ -40,7 +40,8 @@
             <div class="info-card">
                 <h3>Server Health</h3>
                 <p><strong>Database Status: </strong>{{ system_health.db_status }}</p>
-                <p><strong>Active Users: </strong>{{ system_health.active_users }}</p>
+                <p><strong>Database Filesize: </strong>{{ system_health.db_filesize_mb }}MB</p>
+                <p><strong>Registered Users: </strong>{{ system_health.active_users }}</p>
                 <p><strong>CPU Usage: </strong>{{ system_health.cpu_percent }}%</p>
                 <p><strong>Memory Usage: </strong>{{ system_health.memory_used_mb }}MB /{{ system_health.memory_total_mb }}MB({{ system_health.memory_percent }}%)</p>
             </div>
