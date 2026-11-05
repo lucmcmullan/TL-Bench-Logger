@@ -67,9 +67,12 @@ document.getElementById("saveBenchEdit").addEventListener("click", () => {
             cell: document.getElementById("editBenchCell").value,
             active: document.getElementById("editBenchActive").checked
         }
-    );
+    ).then(data => {
+        if (data.success) {
+            location.reload()
+        }
+    })
 
-    location.reload();
 });
 
 document.getElementById("deleteBenchEdit").addEventListener("click", () => {
@@ -199,7 +202,7 @@ editor.addEventListener("drop", event => {
 
 cellInput.addEventListener("input", updateCellPrefix)
 function saveBench(benchId, data) {
-    fetch(
+    return fetch(
         "/admin/benches/update", 
         { method: "POST", headers: 
             { "Content-Type": "application/json" },
@@ -208,9 +211,6 @@ function saveBench(benchId, data) {
     ).then(response => response.json()).then(data => {
         console.log("Bench updated:",data);
     })
-    .catch(error => {
-        console.error("Update failed:",error);
-    });
 }
 
 document.querySelectorAll(".resize-handle").forEach(handle => {

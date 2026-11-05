@@ -162,7 +162,7 @@ def update_bench():
     write_audit(session["initials"], "UPDATE_BENCH", f"Updated {bench.name}")
 
     socketio.emit("bench_updated", { "bench_id": bench.id })
-    return jsonify({ "success": True })
+    return jsonify(success=True)
 
 @admin_bp.route("/admin/benches/delete", methods=["POST"])
 def delete_bench():
@@ -170,13 +170,13 @@ def delete_bench():
     bench = Bench.query.get(data["bench_id"])
 
     if not bench:
-        return jsonify({ "success": False })
+        return jsonify(success=False)
 
     db.session.delete(bench)
     db.session.commit()
 
     socketio.emit("bench_deleted", { "bench_id": bench.id })
-    return jsonify({ "success": True })
+    return jsonify(success=True)
 
 @admin_bp.route("/admin/benches/create", methods=["POST"])
 def create_bench():
