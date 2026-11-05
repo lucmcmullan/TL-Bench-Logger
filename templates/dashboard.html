@@ -41,47 +41,54 @@
         </div>
 
         <div id="factory-floor">
-                
-            {% for row in layout %}
-            <div class="floor-row">
-            {% for bench in row %}
-                {% if bench %}
-                    {% set result = bench_results.get(bench.id) %}
+            {% for bench in benches %}
+            {% set result = bench_results.get(bench.id) %}
 
-                    <button class="bench
-                        {% if result == 'PASS' %}
-                            pass
-                        {% elif result == 'FAIL' %}
-                            fail
-                        {% else %}
-                            pending
-                        {% endif %}"
-                        data-id="{{ bench.id }}"
-                        style="grid-column: span {{ bench.span }}">
-
-                        TB{{ bench.label }}<br>
-
-                        {% if bench.cell not in no_cell_prefix %}
-                            Cell {{ bench.cell }}
-                        {% else %}
-                            {{ bench.cell }}
-                        {% endif %}
-                    </button>
-                    
+            <button
+                class="bench
+                {% if not bench.active %}
+                    disabled-bench
+                {% elif result == 'PASS' %}
+                    pass
+                {% elif result == 'FAIL' %}
+                    fail
                 {% else %}
+                    pending
+                {% endif %}"
 
-                    <div class="gap"></div>
+                data-id="{{ bench.id }}"
+                data-active="{{ 'true' if bench.active else 'false' }}"
 
+                style="
+                    left: {{ bench.x * 40 }}px;
+                    top: {{ bench.y * 40 }}px;
+                    width: {{ bench.width * 40 }}px;
+                    height: {{ bench.height * 40 }}px;
+                ">
+
+                TB{{ bench.name }}
+                <br>
+                {% if bench.cell %}
+                    {% if bench.cell in no_cell_prefix %}
+                        {{ bench.cell }}
+                    {% else %}
+                        Cell {{ bench.cell }}
+                    {% endif %}
                 {% endif %}
+            </button>
             {% endfor %}
-                
-            </div>
-            {% endfor %}
+
         </div>
 
         <div id="inspectionModal" class="modal">
             <div class="modal-content">
                 <h2 id="modalBenchTitle">Bench</h2>
+                <div
+                    id="disabledBenchMessage"
+                    class="flash-message flash-error"
+                    style="display:none;">
+                    This bench is currently disabled and cannot be tested.
+                </div>
                 <div id="groundBondSection">
                     <h3>Ground Bond</h3>
                     <div class="button-group">

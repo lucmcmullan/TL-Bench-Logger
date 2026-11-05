@@ -18,7 +18,7 @@ from flask import(
 )
 
 from scripts.db import db
-from scripts.models import InspectionSession, SessionUser, User
+from scripts.models import InspectionSession, SessionUser, User, Bench, LayoutSnapshot
 import utils.versioning as versioning
 import time
 import json
@@ -75,8 +75,8 @@ def developer_required(f):
 def login_page():
     return render_template("login.html")
 
-@auth_bp.route("/start", methods=["POST"])
-def start_session():
+@auth_bp.route("/login", methods=["POST"])
+def login():
     initials = request.form.get("initials")
     password = request.form.get("password")
 
@@ -173,6 +173,24 @@ def join_or_start_session():
         inspection_session = InspectionSession(initials=session["initials"], date=date.today(), status="IN_PROGRESS")
 
         db.session.add(inspection_session)
+
+        db.session.flush()
+
+        for bench in Bench.query.all():
+            db.session.add(LayoutSnapshot(
+                session_id=inspection_session.id,
+                bench_id=bench.id,
+                name=bench.name,
+                cell=bench.cell,
+
+                x=bench.x,
+                y=bench.y,
+
+                width=bench.width,
+                height=bench.height,
+
+                active=bench.active
+            ))
 
     session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=session["user_id"]).first()
 

@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
 
-    <body>
+    <body data-session-active="{{ 'true' if session_active else 'false' }}">
         <div id="benchEditModal" class="modal">
             <div class="modal-content">
                 <h2 id="editBenchTitle">Edit Bench</h2>
@@ -30,11 +30,18 @@
         </div>
 
         <h1>Bench Management</h1>
+        {% if session_active %}
+            <div class="flash-message flash-error">
+                Layout editing is disabled while an inspection session is active.
+                Complete or cancel the current session before making layout changes.
+            </div>
+        {% endif %}
+
         <button onclick="window.location.href='/menu'" class="btn-secondary">Back to Menu</button>
         <br><br>
         <div class="info-card">
             <h2>Factory Layout Editor</h2>
-            <button id="addBenchBtn" class="btn-success">Add Bench</button>
+            <button id="addBenchBtn" class="btn-success" {% if session_active %}disabled{% endif %}>Add Bench</button>
             <p>Drag benches to reposition them. Positions snap to the grid automatically.</p>
 
             <div id="layout-editor">
@@ -43,7 +50,7 @@
 
                 <div
                     class="layout-bench bench pending"
-                    draggable="true"
+                    draggable="{{ 'false' if session_active else 'true' }}"
 
                     data-id="{{ bench.id }}"
                     data-name="{{ bench.name }}"

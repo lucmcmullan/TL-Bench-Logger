@@ -38,6 +38,19 @@ function closeModal() {
 
 document.querySelectorAll(".bench").forEach(button => {
     button.addEventListener("click", async () => {
+        if (button.dataset.active === "false") {
+            document.getElementById("modalBenchTitle").innerText = `${button.innerText}\n(DISABLED)`;
+            document.getElementById("disabledBenchMessage").style.display = "block";
+            document.getElementById("groundBondSection").style.display = "none";
+            document.getElementById("insulationResistanceSection").style.display = "none";
+            document.getElementById("weeklySection").style.display = "none";
+            document.getElementById("failureSection").style.display = "none";
+            document.getElementById("saveInspection").disabled = true;
+            document.getElementById("resetInspection").disabled = true;
+            document.getElementById("comments").disabled = true;
+            modal.style.display = "block"
+            return;
+        }
         const response = await fetch(
             "/lock-bench",
             {
@@ -96,6 +109,12 @@ document.querySelectorAll(".bench").forEach(button => {
             weeklySection.style.display = "none";
         }
 
+        document.getElementById("disabledBenchMessage").style.display = "none";
+        document.getElementById("saveInspection").disabled = false;
+        document.getElementById("resetInspection").disabled = false;
+        document.getElementById("comments").disabled = false;
+        document.getElementById("groundBondSection").style.display = NO_GROUNDBOND.includes(benchName) ? "none" : "block";
+        document.getElementById("insulationResistanceSection").style.display = "block";
         modal.style.display = "block";
     });
 });
@@ -161,7 +180,6 @@ document.getElementById("weeklyFail")?.addEventListener("click", () => {
 
 document.getElementById("cancelInspection")?.addEventListener("click", async () => {
     if (currentBench) {
-
         await fetch(
             "/unlock-bench",
             {
@@ -200,11 +218,8 @@ document.getElementById("saveInspection")?.addEventListener("click", async () =>
 
     if (failed && !failReason) {
         const dropdown = document.getElementById("failReason")
-
         dropdown.style.border = "2px solid red"
-
         dropdown.focus()
-
         alert("You must select a failure reason before saving.")
 
         return
@@ -231,7 +246,6 @@ document.getElementById("saveInspection")?.addEventListener("click", async () =>
     currentBench.classList.remove("pending", "pass", "fail");
     currentBench.classList.add(result.overall === "PASS" ? "pass" : "fail");
     await refreshProgress()
-
     closeModal()
 });
 
@@ -259,10 +273,7 @@ document.getElementById("completeSession")?.addEventListener("click", async () =
     const result = await response.json();
 
     if (result.success) {
-        alert(
-            "Session completed successfully."
-        );
-
+        alert("Session completed successfully.");
         window.location.href = "/menu";
     } else {
         alert(result.message)
@@ -302,4 +313,3 @@ async function sendHeartbeat() {
 sendHeartbeat()
 
 setInterval(sendHeartbeat, 30000);
-
