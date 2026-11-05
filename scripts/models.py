@@ -81,3 +81,17 @@ class AuditLog(db.Model):
     user_initials = db.Column(db.String(10), nullable=False)
     event_type = db.Column(db.String(50), nullable=False)
     message = db.Column(db.String(500), nullable=False)
+
+class LayoutSnapshot(db.Model):
+    __tablename__ = "layout_snapshots"
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), nullable=False)
+    bench_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(50))
+    cell = db.Column(db.String(50))
+    x = db.Column(db.Integer)
+    y = db.Column(db.Integer)
+    width = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    active = db.Column(db.Boolean)

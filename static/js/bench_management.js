@@ -5,6 +5,7 @@ const cellInput = document.getElementById("editBenchCell");
 const cellPrefix = document.getElementById("cellPrefix");
 
 const GRID_SIZE = 40;
+const SESSION_ACTIVE = document.body.dataset.sessionActive === "true";
 
 let draggedBench = null;
 let selectedBench = null;
@@ -34,28 +35,18 @@ function stopResize() {
 }
 
 function updateCellPrefix() {
-
     const value = cellInput.value.trim();
-
-    // Empty input = still show "Cell"
+    
     if (value === "") {
-
         cellPrefix.style.display = "inline";
-
         return;
     }
 
-    // Starts with a number = show "Cell"
     if (/^\d/.test(value)) {
-
         cellPrefix.style.display = "inline";
-
     } else {
-
         cellPrefix.style.display = "none";
-
     }
-
 }
 
 document.getElementById("saveBenchEdit").addEventListener("click", () => {
@@ -125,6 +116,7 @@ document.getElementById("addBenchBtn").addEventListener("click", () => {
 
 document.querySelectorAll(".layout-bench").forEach(bench => {
     bench.addEventListener("mousedown", e => {
+        if (SESSION_ACTIVE) return
         const rect = bench.getBoundingClientRect();
         dragOffsetX = e.clientX - rect.left;
         dragOffsetY = e.clientY - rect.top;
@@ -145,6 +137,12 @@ document.querySelectorAll(".layout-bench").forEach(bench => {
     );
 
     bench.addEventListener("contextmenu", e => {
+        if (SESSION_ACTIVE) {
+            e.preventDefault();
+            alert("Layout editing is disabled while a session is active.");
+            return;
+        }
+
         e.preventDefault();
         selectedBench = bench;
 

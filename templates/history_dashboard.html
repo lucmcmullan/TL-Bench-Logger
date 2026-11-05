@@ -16,43 +16,54 @@
         {% endif %}
 
         <div id="factory-floor">
-            {% for row in layout %}
-            <div class="floor-row">
-                {% for bench in row %}
-                    {% if bench %}
-                        {% set result = bench_results.get(bench.id) %}
+            {% for bench in benches %}
 
-                        <button class="bench
-                            {% if result == 'PASS' %}
-                                pass
-                            {% elif result == 'FAIL' %}
-                                fail
-                            {% else %}
-                                pending
-                            {% endif %}"
+            {% set result = bench_results.get(bench.bench_id) %}
 
-                            data-inspection='{{ inspection_details.get(bench.id, {}) | tojson }}'
-                            style="grid-column: span {{ bench.span }}">
+            <button
+                class="bench
+                {% if not bench.active %}
+                    disabled-bench
+                {% elif result == 'PASS' %}
+                    pass
+                {% elif result == 'FAIL' %}
+                    fail
+                {% else %}
+                    pending
+                {% endif %}"
 
-                            TB{{ bench.label }}<br>
-                            {% if bench.cell not in ["Hi-Bar", "Packing", "Returns"] %}
-                                Cell {{ bench.cell }}
-                            {% else %}
-                                {{ bench.cell }}
-                            {% endif %}
+                data-inspection='{{ inspection_details.get(bench.bench_id, {}) | tojson }}'
 
-                        </button>
+                style="
+                    left: {{ bench.x * 40 }}px;
+                    top: {{ bench.y * 40 }}px;
+                    width: {{ bench.width * 40 }}px;
+                    height: {{ bench.height * 40 }}px;
+                ">
+
+                TB{{ bench.name }}
+
+                <br>
+
+                {% if bench.cell %}
+
+                    {% if bench.cell in ["Hi-Bar","Packing","Returns"] %}
+
+                        {{ bench.cell }}
 
                     {% else %}
 
-                        <div class="gap"></div>
-                    {% endif %}
-                {% endfor %}
+                        Cell {{ bench.cell }}
 
-            </div>
+                    {% endif %}
+
+                {% endif %}
+
+            </button>
+
             {% endfor %}
 
-        </div>
+            </div>
 
         <div id="historyModal" class="modal">
             <div class="modal-content">

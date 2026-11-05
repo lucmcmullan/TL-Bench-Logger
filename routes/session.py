@@ -10,7 +10,7 @@ from flask import(
 from datetime import datetime, timedelta, date
 from constants import FACTORY_LAYOUT, NO_CELL_PREFIX, DATE_FORMAT
 from scripts.db import db
-from scripts.models import Bench, Inspection, InspectionSession, SessionUser
+from scripts.models import Bench, Inspection, InspectionSession, SessionUser, LayoutSnapshot
 from routes.auth import login_required
 from utils.audit import write_audit
 from utils.socketio_instance import socketio
@@ -67,7 +67,12 @@ def dashboard():
 
     active_users = (SessionUser.query.filter(SessionUser.session_id == session["session_id"], SessionUser.last_seen >= datetime.now() - timedelta(minutes=2)).all())
 
-    total_benches = Bench.query.count()
+    benches = Bench.query.all()
+    total_benches = (
+        Bench.query
+        .filter_by(active=True)
+        .count()
+    )
 
     completed_benches = Inspection.query.filter_by(session_id=session["session_id"]).count()
     progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
@@ -81,7 +86,7 @@ def dashboard():
     
     return render_template(
         "dashboard.html", 
-        layout=FACTORY_LAYOUT, 
+        benches=benches, 
         bench_results=bench_results, 
         is_friday=is_friday, 
         session_id=session["session_id"],
@@ -149,9 +154,15 @@ def view_session(session_id):
 
     progress_percent = round((completed_benches / total_benches) * 100) if total_benches else 0
 
+    layout_snapshot = (
+        LayoutSnapshot.query
+        .filter_by(session_id=session_id)
+        .all()
+    )
+        
     response = make_response(render_template(
             "history_dashboard.html",
-            layout=FACTORY_LAYOUT,
+            benches=layout_snapshot,
             bench_results=bench_results,
             inspection_details=inspection_details,
             inspection_session=inspection_session,

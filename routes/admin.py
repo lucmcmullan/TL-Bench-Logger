@@ -11,7 +11,7 @@ from flask import (
 from werkzeug.security import generate_password_hash
 
 from scripts.db import db
-from scripts.models import AuditLog, Bench, User
+from scripts.models import AuditLog, Bench, User, InspectionSession
 
 from datetime import datetime
 from utils.audit import write_audit
@@ -118,15 +118,21 @@ def audit_log():
 @admin_bp.route("/admin/benches")
 @login_required
 @admin_required
-def manage_benches():
-    benches = Bench.query.order_by(Bench.id).all()
+def bench_management():
+    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
 
-    return render_template("admin/benches.html", benches=benches)
+    return render_template("admin/benches.html", benches=Bench.query.all(), session_active=active_session is not None)
+
 
 @admin_bp.route("/admin/benches/update", methods=["POST"])
 @login_required
 @admin_required
 def update_bench():
+    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+
+    if active_session:
+        return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403
+
     data = request.get_json()
     bench = Bench.query.get_or_404(data["bench_id"])
 
@@ -166,6 +172,11 @@ def update_bench():
 
 @admin_bp.route("/admin/benches/delete", methods=["POST"])
 def delete_bench():
+    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    
+    if active_session:
+        return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403
+    
     data = request.get_json()
     bench = Bench.query.get(data["bench_id"])
 
@@ -180,6 +191,11 @@ def delete_bench():
 
 @admin_bp.route("/admin/benches/create", methods=["POST"])
 def create_bench():
+    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    
+    if active_session:
+        return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403
+
     data = request.get_json()
 
     highest = db.session.query(db.func.max(db.cast(Bench.name, db.Integer))).scalar() or 0
