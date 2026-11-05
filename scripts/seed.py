@@ -3,8 +3,8 @@ from scripts.db import db
 from werkzeug.security import generate_password_hash
 from scripts.models import *
 from utils.backup import backup
-
 import os
+
 with app.app_context():
     backup("Manual")
 
