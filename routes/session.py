@@ -8,7 +8,7 @@ from flask import(
 )
 
 from datetime import datetime, timedelta, date
-from constants import FACTORY_LAYOUT, NO_CELL_PREFIX, DATE_FORMAT
+from constants import DATE_FORMAT
 from scripts.db import db
 from scripts.models import Bench, Inspection, InspectionSession, SessionUser, LayoutSnapshot
 from routes.auth import login_required
@@ -94,7 +94,6 @@ def dashboard():
         completed_benches=completed_benches,
         progress_percent=progress_percent,
         active_users=active_users,
-        no_cell_prefix=NO_CELL_PREFIX,
         inspection_details={},
         date=datetime.now().strftime(DATE_FORMAT)
         )

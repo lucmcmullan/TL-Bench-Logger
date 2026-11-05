@@ -4,8 +4,7 @@ from werkzeug.security import generate_password_hash
 from scripts.models import *
 from utils.backup import backup
 
-from constants import FACTORY_LAYOUT
-
+import os
 with app.app_context():
     backup("Manual")
 
@@ -13,20 +12,10 @@ with app.app_context():
 
     BenchLock.query.delete()
     SessionUser.query.delete() 
-    
-    for row in FACTORY_LAYOUT:
-        for bench in row:
-            if bench is None:
-                continue
 
-            existing_bench = db.session.get(Bench, bench["id"])
-
-            if not existing_bench:
-                db.session.add(Bench(id=bench["id"], name=bench["label"]))
-
-    if not User.query.filter_by(initials="LM").first():
-        db.session.add(User(initials="LM", name="Luc McMullan", password_hash=generate_password_hash("password"), is_admin=True))
+    if not User.query.filter_by(initials="LM", name="Luc McMullan").first():
+        db.session.add(User(initials="LM", name="Luc McMullan", password_hash=generate_password_hash(os.getenv(LM_DEFAULT_PASSWORD)), is_admin=True))
     
     db.session.commit()
     
-    print("test benches loaded")
+    print("Database re-seeded")

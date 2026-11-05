@@ -69,10 +69,10 @@
                 TB{{ bench.name }}
                 <br>
                 {% if bench.cell %}
-                    {% if bench.cell in no_cell_prefix %}
-                        {{ bench.cell }}
-                    {% else %}
+                    {% if bench.cell.isdigit() %}
                         Cell {{ bench.cell }}
+                    {% else %}
+                        {{ bench.cell }}
                     {% endif %}
                 {% endif %}
             </button>

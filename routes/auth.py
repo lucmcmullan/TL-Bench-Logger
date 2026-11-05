@@ -64,7 +64,7 @@ def developer_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        if session.get("initials") != "LM":
+        if session.get("initials") != "LM" and session.get("name") != "Luc McMullan":
             abort(403)
 
         return f(*args, **kwargs)
