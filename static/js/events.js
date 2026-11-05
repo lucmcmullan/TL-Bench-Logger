@@ -49,11 +49,13 @@ socket.on("inspection_refresh", () => {
 
 socket.on("audit_log", data => {
     const textarea = document.getElementById("auditLog");
-    const entry = `${data.timestamp} - ${data.event_type} - ${data.user_initials} - ${data.message}`;
 
+    if (!textarea)
+        return;
+
+    const entry = `${data.timestamp} - ${data.event_type} - ${data.user_initials} - ${data.message}`;
     textarea.value = entry + "\n" + textarea.value;
-    }
-);
+});
 
 socket.on("bench_deleted", () => {
     location.reload()
@@ -65,4 +67,8 @@ socket.on("bench_created", () => {
 
 socket.on("bench_updated", () => {
     location.reload()
+});
+
+socket.on("session_deleted", () => {
+    document.getElementById("sessionDeletedBanner").style.display = "block"
 });

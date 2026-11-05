@@ -179,10 +179,14 @@ def delete_session(session_id):
     if not session.get("is_admin"):
         return jsonify({ "success": False }), 403
 
+    inspection_session = (InspectionSession.query.get_or_404(session_id))
+    socketio.emit("session_deleted", { "session_id": inspection_session.id })
+
     Inspection.query.filter_by(session_id=session_id).delete()
     InspectionSession.query.filter_by(id=session_id).delete()
     db.session.commit()
 
     write_audit(session["initials"], "DELETE_SESSION", f"Session {session_id} deleted")
 
+    
     return jsonify({ "success": True })

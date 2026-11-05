@@ -34,9 +34,7 @@
                                 <button class="btn-secondary" onclick="window.location.href='/history/{{ inspection_session.id }}'">View</button>
                                 
                                 {% if session.get("is_admin") %}
-                                <form action="/history/{{ inspection_session.id }}/delete" method="POST"></form>
-                                    <button type="submit" class="btn-danger">Delete</button>
-                                </form>
+                                <button type="button" class="btn-danger quick-delete-session" data-session-id="{{ inspection_session.id}}">Delete</button>
                                 {% endif %}
                             </div>
                         </td>
@@ -46,6 +44,57 @@
             </table>
             <br>
         </div>
+
+        <div id="deleteSessionModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Delete Session</h2>
+
+                <p>This will permanently remove:</p>
+                <ul>
+                    <li>All inspection records</li>
+                    <li>The inspection session</li>
+                </ul>
+
+                <p>This action cannot be undone.</p>
+                <p>Type <strong>DELETE</strong> to continue:</p>
+
+                <input id="deleteConfirmation" type="deleteText">
+
+                <br><br>
+
+                <button id="confirmDeleteSession" disabled>Delete Session</button>
+                <button id="cancelDeleteSession">Cancel</button>
+            </div>
+        </div>
         <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+        <script>
+            let sessionToDelete = null;
+            document.querySelectorAll(".quick-delete-session").forEach(button => {
+                button.addEventListener("click", () => {
+                    sessionToDelete = button.dataset.sessionId;
+                    document.getElementById("deleteConfirmation").value = "";
+                    document.getElementById("confirmDeleteSession").disabled = true;
+                    document.getElementById("deleteSessionModal").style.display = "block";
+                });
+            });
+            document.getElementById("deleteConfirmation").addEventListener("input", () => {
+                document.getElementById("confirmDeleteSession").disabled = document.getElementById( "deleteConfirmation").value !== "DELETE";
+            });
+            document.getElementById("cancelDeleteSession").addEventListener("click",() => {
+                document.getElementById("deleteSessionModal").style.display = "none";
+            });
+            document.getElementById("confirmDeleteSession").addEventListener("click", async () => {
+                if (!sessionToDelete)
+                    return;
+
+                const response = await fetch(`/history/${sessionToDelete}/delete`, { method: "POST"});
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert(result.message || "Failed to delete session.");
+                }
+            });
+        </script>
     </body>
 </html>

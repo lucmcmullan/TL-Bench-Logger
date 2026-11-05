@@ -17,7 +17,6 @@
 
         <div id="factory-floor">
             {% for bench in benches %}
-
             {% set result = bench_results.get(bench.bench_id) %}
 
             <button
@@ -42,23 +41,14 @@
                 ">
 
                 TB{{ bench.name }}
-
                 <br>
-
                 {% if bench.cell %}
-
                     {% if bench.cell in ["Hi-Bar","Packing","Returns"] %}
-
                         {{ bench.cell }}
-
                     {% else %}
-
                         Cell {{ bench.cell }}
-
                     {% endif %}
-
                 {% endif %}
-
             </button>
 
             {% endfor %}
@@ -99,17 +89,6 @@
 
                 <button id="confirmDeleteSession" disabled>Delete Session</button>
                 <button id="cancelDeleteSession">Cancel</button>
-            </div>
-        </div>
-
-        <div id="deleteConfirmModal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <h2>Delete Inspection Record</h2>
-                <p>This action cannot be undone.</p>
-                <p>The inspection record will be permanently removed from history.</p>
-
-                <button id="confirmDelete">Yes, Delete</button>
-                <button id="cancelDelete">Cancel</button>
             </div>
         </div>
 
