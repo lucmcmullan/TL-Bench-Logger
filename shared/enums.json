@@ -1,34 +1,32 @@
 {
-    "Defaults": {
-        "BenchActive": true,
-        "InspectionSessionStatus": "IN_PROGRESS"
-    },
+  "Defaults": {
+    "BenchActive": true,
+    "InspectionSessionStatus": "IN_PROGRESS"
+  },
 
-    "ObjectType": {
-        "BENCH": "testbench",
-        "STORES": "stores",
-        "NOBENCH": "cell_nobench"
-    },
+  "ObjectType": {
+    "BENCH": "testbench",
+    "STORES": "stores",
+    "NOBENCH": "cell_nobench"
+  },
 
-    "Formatting": {
-        "DATE_FORMAT": "%d/%m/%y",
-        "TIME_FORMAT": "%H:%M:%S"
-    },
+  "Formatting": {
+    "DATE_FORMAT": "%d/%m/%y",
+    "TIME_FORMAT": "%H:%M:%S"
+  },
 
-    "InspectionSessionStatus": {
-        "IN_PROGRESS": "In Progress",
-        "COMPLETED": "Completed",
-        "UNFINISHED": "Unfinished"
-    },
+  "InspectionSessionStatus": {
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed",
+    "UNFINISHED": "Unfinished"
+  },
 
-    "FlashErrorMessages": {
-        "OwnAdminRightsNotRemovable": "You cannot remove your own admin rights.",
-        "DevAdminRightsNotRemovable": "You cannot remove the developer's admin rights.",
-        "OwnAccountNotDisableable": "You cannot disable your own account.",
-        "DevAccountNotDisableable": "You cannot disable the developer's account.",
-        "PasswordsDoNotMatch": "Passwords do not match.",
-        "CreateUserAlreadyExists": "User already exists."
-        
-    }
+  "FlashErrorMessages": {
+    "OwnAdminRightsNotRemovable": "You cannot remove your own admin rights.",
+    "DevAdminRightsNotRemovable": "You cannot remove the developer's admin rights.",
+    "OwnAccountNotDisableable": "You cannot disable your own account.",
+    "DevAccountNotDisableable": "You cannot disable the developer's account.",
+    "PasswordsDoNotMatch": "Passwords do not match.",
+    "CreateUserAlreadyExists": "User already exists."
+  }
 }
-

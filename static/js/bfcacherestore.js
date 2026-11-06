@@ -1,5 +1,5 @@
 window.addEventListener("pageshow", function (event) {
-    if (event.persisted) {
-        window.location.reload()
-    }
-})
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
