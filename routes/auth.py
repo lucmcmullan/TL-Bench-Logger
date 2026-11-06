@@ -7,7 +7,7 @@ from utils.audit import write_audit
 from utils.uptime import UPTIME_FILE, init_uptime
 import atexit
 
-from flask import(
+from flask import (
     Blueprint,
     render_template,
     request,
@@ -32,7 +32,8 @@ with open("shared/enums.json", "r") as f:
 
 auth_bp = Blueprint("auth", __name__)
 
-START_TIME =init_uptime()
+START_TIME = init_uptime()
+
 
 @atexit.register
 def save_shutdown_time():
@@ -42,7 +43,8 @@ def save_shutdown_time():
     data = json.loads(UPTIME_FILE.read_text())
     data["last_shutdown"] = (datetime.now().isoformat())
     UPTIME_FILE.write_text(json.dumps(data, indent=4))
-    
+
+
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -54,6 +56,7 @@ def login_required(f):
 
     return decorated
 
+
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -62,6 +65,7 @@ def admin_required(f):
 
         return f(*args, **kwargs)
     return decorated
+
 
 def developer_required(f):
     @wraps(f)
@@ -74,9 +78,11 @@ def developer_required(f):
 
     return decorated
 
+
 @auth_bp.route("/")
 def login_page():
     return render_template("login.html")
+
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -105,7 +111,8 @@ def login():
     session["initials"] = auth_user.initials
     session["is_admin"] = auth_user.is_admin
 
-    write_audit(session["initials"], "LOGIN", f"User {session['initials']} logged in")
+    write_audit(session["initials"], "LOGIN",
+                f"User {session['initials']} logged in")
 
     return redirect("/menu")
 
@@ -145,35 +152,39 @@ def change_password():
     session["initials"] = user.initials
     session["is_admin"] = user.is_admin
 
-    write_audit(
-        user.initials,
-        "PASSWORD_CHANGE",
-        f"User {user.initials} changed password"
-    )
+    write_audit(user.initials, "PASSWORD_CHANGE",
+                f"User {user.initials} changed password")
 
     return redirect("/menu")
+
 
 @auth_bp.route("/menu")
 @login_required
 def menu():
-    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
+    completed_session = (InspectionSession.query.filter_by(
+        date=date.today(), status="COMPLETED").first())
 
-    active_session = (InspectionSession.query.filter_by(date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
+    active_session = (InspectionSession.query.filter_by(date=date.today(
+    ), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     return render_template("menu.html", completed_session=completed_session, active_session=active_session)
+
 
 @auth_bp.route("/join-or-start-session", methods=["POST"])
 @login_required
 def join_or_start_session():
-    completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
+    completed_session = (InspectionSession.query.filter_by(
+        date=date.today(), status="COMPLETED").first())
 
     if completed_session:
         return "A session has already been completed today", 403
 
-    inspection_session = (InspectionSession.query.filter_by(date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
+    inspection_session = (InspectionSession.query.filter_by(date=date.today(
+    ), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     if not inspection_session:
-        inspection_session = InspectionSession(initials=session["initials"], date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
+        inspection_session = InspectionSession(initials=session["initials"], date=date.today(
+        ), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
 
         db.session.add(inspection_session)
 
@@ -195,18 +206,22 @@ def join_or_start_session():
                 active=bench.active
             ))
 
-    session_user = SessionUser.query.filter_by(session_id=inspection_session.id, user_id=session["user_id"]).first()
+    session_user = SessionUser.query.filter_by(
+        session_id=inspection_session.id, user_id=session["user_id"]).first()
 
     if not session_user:
-        db.session.add(SessionUser(session_id=inspection_session.id, user_id=session["user_id"], last_seen=datetime.now()))
+        db.session.add(SessionUser(session_id=inspection_session.id,
+                       user_id=session["user_id"], last_seen=datetime.now()))
 
         db.session.commit()
 
     session["session_id"] = inspection_session.id
 
-    write_audit(session["initials"], "START_SESSION", f"User {session['initials']} joined session {inspection_session.id}")
+    write_audit(session["initials"], "START_SESSION",
+                f"User {session['initials']} joined session {inspection_session.id}")
 
     return redirect("/dashboard")
+
 
 @auth_bp.route("/about")
 @login_required
@@ -236,7 +251,8 @@ def about():
         "db_filesize_mb": db_size_mb
     }
 
-    backup_info = {"filename": "None", "backup_type": "Unknown", "created_at": "Never"}
+    backup_info = {"filename": "None",
+                   "backup_type": "Unknown", "created_at": "Never"}
 
     meta_file = Path("data/backups/_last_backup.json")
 
@@ -256,8 +272,9 @@ def about():
         system_health=system_health
     )
 
+
 @auth_bp.route("/check-user/<initials>")
 def check_user(initials):
     user = User.query.filter_by(initials=initials.upper()).first()
 
-    return { "exists": user is not None, "must_change_password": user.must_change_password if user else False }
+    return {"exists": user is not None, "must_change_password": user.must_change_password if user else False}

@@ -3,7 +3,8 @@ from scripts.db import db
 import json
 with open("shared/enums.json", "r") as f:
     ENUMS = json.load(f)
-    
+
+
 class Bench(db.Model):
     __tablename__ = "benches"
 
@@ -20,13 +21,16 @@ class Bench(db.Model):
     last_modified = db.Column(db.DateTime)
     inspections = db.relationship("Inspection", backref="bench", lazy=True)
 
+
 class BenchLock(db.Model):
     __tablename__ = "bench_locks"
 
-    bench_id = db.Column(db.Integer, db.ForeignKey("benches.id"), primary_key=True)
+    bench_id = db.Column(db.Integer, db.ForeignKey(
+        "benches.id"), primary_key=True)
     locked_by = db.Column(db.String(10), nullable=False)
     locked_at = db.Column(db.DateTime, nullable=False)
-    
+
+
 class InspectionSession(db.Model):
     __tablename__ = "sessions"
 
@@ -35,18 +39,23 @@ class InspectionSession(db.Model):
     date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.now)
     end_time = db.Column(db.DateTime)
-    status = db.Column(db.String(20), default=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
+    status = db.Column(
+        db.String(20), default=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)
     completed_by = db.Column(db.String(10), nullable=True)
 
+
 class Inspection(db.Model):
     __tablename__ = "inspections"
-    __table_args__ = (db.UniqueConstraint("session_id", "bench_id", name="uq_session_bench"),)
+    __table_args__ = (db.UniqueConstraint(
+        "session_id", "bench_id", name="uq_session_bench"),)
 
     id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), nullable=False)
-    bench_id = db.Column(db.Integer, db.ForeignKey("benches.id"), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey(
+        "sessions.id"), nullable=False)
+    bench_id = db.Column(db.Integer, db.ForeignKey(
+        "benches.id"), nullable=False)
     ir_result = db.Column(db.String(10), nullable=False)
     gb_result = db.Column(db.String(10), nullable=False)
     weekly_result = db.Column(db.String(10))
@@ -54,6 +63,7 @@ class Inspection(db.Model):
     fail_reason = db.Column(db.String(255))
     comments = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.now)
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -67,6 +77,7 @@ class User(db.Model):
     must_change_password = db.Column(db.Boolean, default=True)
     password_reset_at = db.Column(db.DateTime)
 
+
 class SessionUser(db.Model):
     __tablename__ = "session_users"
     user = db.relationship("User", backref="session_entries")
@@ -75,21 +86,24 @@ class SessionUser(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     last_seen = db.Column(db.DateTime)
-    
+
+
 class AuditLog(db.Model):
     __tablename__ = "audit_log"
-    
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now)
+
+    timestamp = db.Column(db.DateTime, nullable=False,
+                          default=datetime.now, primary_key=True)
     user_initials = db.Column(db.String(10), nullable=False)
     event_type = db.Column(db.String(50), nullable=False)
     message = db.Column(db.String(500), nullable=False)
+
 
 class LayoutSnapshot(db.Model):
     __tablename__ = "layout_snapshots"
 
     id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey(
+        "sessions.id"), nullable=False)
     bench_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(50))
     cell = db.Column(db.String(50))

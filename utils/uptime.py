@@ -4,7 +4,8 @@ import json
 
 UPTIME_FILE = Path("data/uptime.json")
 
-DT_THRESHOLD = 300 # seconds
+DT_THRESHOLD = 300  # seconds
+
 
 def init_uptime():
     now = datetime.now()
@@ -31,7 +32,8 @@ def init_uptime():
     last_shutdown = data.get("last_shutdown")
 
     if last_shutdown:
-        downtime = (now - datetime.fromisoformat(last_shutdown)).total_seconds()
+        downtime = (now - datetime.fromisoformat(last_shutdown)
+                    ).total_seconds()
 
         if downtime >= DT_THRESHOLD:
             started_at = now

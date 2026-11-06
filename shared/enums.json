@@ -19,5 +19,16 @@
         "IN_PROGRESS": "In Progress",
         "COMPLETED": "Completed",
         "UNFINISHED": "Unfinished"
+    },
+
+    "FlashErrorMessages": {
+        "OwnAdminRightsNotRemovable": "You cannot remove your own admin rights.",
+        "DevAdminRightsNotRemovable": "You cannot remove the developer's admin rights.",
+        "OwnAccountNotDisableable": "You cannot disable your own account.",
+        "DevAccountNotDisableable": "You cannot disable the developer's account.",
+        "PasswordsDoNotMatch": "Passwords do not match.",
+        "CreateUserAlreadyExists": "User already exists."
+        
     }
 }
+

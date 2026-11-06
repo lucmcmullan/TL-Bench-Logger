@@ -10,14 +10,16 @@ from utils.socketio_instance import socketio
 import json
 with open("shared/enums.json", "r") as f:
     ENUMS = json.load(f)
-    
+
 dev_bp = Blueprint("dev", __name__)
+
 
 @dev_bp.route("/dev")
 @login_required
 @developer_required
 def dev_home():
     return render_template("dev/dev.html")
+
 
 @dev_bp.route("/dev/routes")
 @login_required
@@ -26,9 +28,11 @@ def dev_routes():
     routes = []
 
     for rule in current_app.url_map.iter_rules():
-        routes.append({ "path": str(rule), "methods": ", ".join(sorted(rule.methods)), "endpoint": rule.endpoint})
+        routes.append({"path": str(rule), "methods": ", ".join(
+            sorted(rule.methods)), "endpoint": rule.endpoint})
 
     return render_template("dev/routes.html", routes=sorted(routes, key=lambda x: x["path"]))
+
 
 @dev_bp.route("/dev/backups")
 @login_required
@@ -42,6 +46,7 @@ def dev_backups():
 
     return render_template("dev/backups.html", backups=backups)
 
+
 @dev_bp.route("/dev/create-backup", methods=["POST"])
 @login_required
 @developer_required
@@ -50,17 +55,18 @@ def create_backup():
 
     return redirect("/dev/backups")
 
+
 @dev_bp.route("/dev/stats")
 @login_required
 @developer_required
 def dev_stats():
     db_file = Path("data/app.db")
-    
+
     db_size_mb = 0
 
     if db_file.exists():
         db_size_mb = round(db_file.stat().st_size / 1024 / 1024, 2)
-    
+
     stats = {
         "users": User.query.count(),
         "enabled_users": User.query.filter_by(is_enabled=True).count(),
@@ -73,6 +79,7 @@ def dev_stats():
     }
 
     return render_template("dev/stats.html", stats=stats)
+
 
 @dev_bp.route("/dev/test-routes")
 @login_required
@@ -96,25 +103,28 @@ def test_routes():
                 elif "POST" in rule.methods:
                     response = client.post(path)
 
-                results.append({ "route": path, "status": response.status_code })
+                results.append({"route": path, "status": response.status_code})
 
             except Exception as e:
-                results.append({ "route": path, "status": f"ERROR: {e}" })
+                results.append({"route": path, "status": f"ERROR: {e}"})
 
     return render_template("dev/route_test.html", results=results)
+
 
 @dev_bp.route("/dev/pass-all-benches")
 @login_required
 @developer_required
 def pass_all_benches():
-    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
+    current = (InspectionSession.query.filter_by(
+        status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     if not current:
         return redirect("/dashboard")
 
     benches = Bench.query.filter_by(active=True).all()
 
     for bench in benches:
-        inspection = Inspection.query.filter_by(session_id=current.id, bench_id=bench.id).first()
+        inspection = Inspection.query.filter_by(
+            session_id=current.id, bench_id=bench.id).first()
 
         if inspection:
             inspection.ir_result = "PASS"
@@ -141,23 +151,26 @@ def pass_all_benches():
 
     db.session.commit()
 
-    socketio.emit("inspection_refresh", { "action": "pass_all" })
-    write_audit(session["initials"], "DEV_ACTION","Pass All Benches")
+    socketio.emit("inspection_refresh", {"action": "pass_all"})
+    write_audit(session["initials"], "DEV_ACTION", "Pass All Benches")
 
     return redirect("/dashboard")
+
 
 @dev_bp.route("/dev/fail-all-benches")
 @login_required
 @developer_required
 def fail_all_benches():
-    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
+    current = (InspectionSession.query.filter_by(
+        status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     if not current:
         return redirect("/dashboard")
 
     benches = Bench.query.filter_by(active=True).all()
 
     for bench in benches:
-        inspection = Inspection.query.filter_by(session_id=current.id, bench_id=bench.id).first()
+        inspection = Inspection.query.filter_by(
+            session_id=current.id, bench_id=bench.id).first()
 
         if inspection:
             inspection.ir_result = "FAIL"
@@ -185,16 +198,18 @@ def fail_all_benches():
 
     db.session.commit()
 
-    socketio.emit("inspection_refresh", { "action": "fail_all" })
-    write_audit(session["initials"], "DEV_ACTION","Fail All Benches")
+    socketio.emit("inspection_refresh", {"action": "fail_all"})
+    write_audit(session["initials"], "DEV_ACTION", "Fail All Benches")
 
     return redirect("/dashboard")
+
 
 @dev_bp.route("/dev/reset-all-benches")
 @login_required
 @developer_required
 def reset_all_benches():
-    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
+    current = (InspectionSession.query.filter_by(
+        status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     if not current:
         return redirect("/dashboard")

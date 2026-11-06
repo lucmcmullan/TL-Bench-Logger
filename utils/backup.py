@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import datetime
-import shutil, json
+import shutil
+import json
+
 
 def backup(btype: str = "Automatic"):
     db_file = Path("data/app.db")
@@ -30,6 +32,7 @@ def backup(btype: str = "Automatic"):
         json.dump(meta, f, indent=4)
 
     print(f"DB backup created: {backup_file}")
+
 
 def perform_daily_backup():
     now = datetime.now()

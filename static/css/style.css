@@ -58,14 +58,10 @@ button {
     border: none;
     border-radius: 8px;
     padding: 10px 18px;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: all 0.15s ease;
-
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
@@ -121,17 +117,13 @@ button:disabled {
     background-color: #4b5563;
 }
 
-/* ----- Benches ----- */
-
 .bench {
     min-height: 70px;
     border: none;
     border-radius: 8px;
     position: absolute;
     font-weight: bold;
-
     min-width: unset;
-
     transition:
         background-color 0.3s ease,
         color 0.3s ease,
@@ -158,19 +150,12 @@ button:disabled {
 }
 
 .disabled-bench {
-
     background: #666 !important;
-
     color: #ccc;
-
     opacity: 0.5;
-
     border: 2px dashed #999;
-
     filter: grayscale(100%);
 }
-
-/* ----- Progress Bar ----- */
 
 .progress-container {
     width: 400px;
@@ -185,9 +170,7 @@ button:disabled {
 .progress-bar {
     width: 100%;
     height: 24px;
-
     background: #dcdcdc;
-
     border-radius: 12px;
     overflow: hidden;
 }
@@ -195,26 +178,17 @@ button:disabled {
 .progress-fill {
     height: 100%;
     background: #2e9e44;
-
     transition: width 0.3s ease;
 }
 
-/* ----- Legend ----- */
-
 .legend {
     position: absolute;
-
     top: 140px;
     right: 30px;
-
     background: white;
-
     padding: 12px;
-
     border-radius: 8px;
-
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -224,14 +198,12 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 8px;
-
     font-weight: bold;
 }
 
 .legend-box {
     width: 16px;
     height: 16px;
-
     border-radius: 4px;
 }
 
@@ -251,49 +223,36 @@ button:disabled {
     background: #808080;
 }
 
-/* ----- Modals ----- */
-
 .modal {
     display: none;
-
     position: fixed;
-
     top: 0;
     left: 0;
-
     width: 100%;
     height: 100%;
-
     background: rgba(0, 0, 0, 0.5);
-
     z-index: 1000;
 }
 
 .modal-content {
     background: white;
-
     width: 90%;
     max-width: 500px;
-
     margin: 50px auto;
     padding: 20px;
-
     border-radius: 10px;
 }
 
 .button-group {
     display: flex;
     gap: 10px;
-
     margin-bottom: 15px;
 }
 
 .button-group button {
     flex: 1;
     padding: 15px;
-
     font-size: 16px;
-
     transition: 0.2s;
 }
 
@@ -304,7 +263,6 @@ button:disabled {
 .modal-buttons {
     display: flex;
     gap: 10px;
-
     margin-top: 20px;
 }
 
@@ -312,8 +270,6 @@ button:disabled {
     flex: 1;
     padding: 15px;
 }
-
-/* ----- Form Controls ----- */
 
 textarea {
     width: 100%
@@ -338,23 +294,17 @@ input {
     width: 100%
 }
 
-/* ----- Selected States ----- */
-
 .selected-pass {
     background: #28a745 !important;
     color: white;
-
     border: 3px solid #1e7e34;
 }
 
 .selected-fail {
     background: #dc3545 !important;
     color: white;
-
     border: 3px solid #a71d2a;
 }
-
-/* ----- Tables ----- */
 
 .table-container {
     margin-top: 20px;
@@ -364,27 +314,21 @@ input {
 .app-table {
     width: 100%;
     border-collapse: collapse;
-
     background: white;
-
     border-radius: 10px;
     overflow: hidden;
-
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .app-table th {
     background: #3b82f6;
     color: white;
-
     text-align: left;
-
     padding: 12px;
 }
 
 .app-table td {
     padding: 12px;
-
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -411,8 +355,6 @@ input {
 .table-link:hover {
     text-decoration: underline;
 }
-
-/* ----- Dark Mode ----- */
 
 body.dark-mode {
     background: #1e1e1e;
@@ -499,88 +441,56 @@ body.dark-mode input {
 }
 
 #layout-editor {
-
     position: relative;
-
     width: 100%;
     height: 1200px;
-
     border: 1px solid #555;
     border-radius: 8px;
-
     overflow: hidden;
-
+    background-size: 40px 40px;
     background-image:
         linear-gradient(#333 1px, transparent 1px),
         linear-gradient(90deg, #333 1px, transparent 1px);
-
-    background-size: 40px 40px;
 }
 
 .layout-bench {
-
     position: absolute;
-
     border: none;
     border-radius: 8px;
-
     font-weight: bold;
-
     background: #cccccc;
-
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
     cursor: move;
-
     user-select: none;
-
     box-sizing: border-box;
-
     text-align: center;
-
     font-size: 14px;
 }
 
 .layout-bench.inactive {
-
     opacity: 0.45;
-
     background: #5f5f5f;
-
     border: 3px dashed #999;
-
     filter: grayscale(100%);
 }
 
 .layout-bench.inactive::after {
-
-    /*content: "DISABLED";*/
-
     position: absolute;
-
     inset: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: rgba(0,0,0,.4);
-
     color: white;
-
     font-weight: bold;
-
     letter-spacing: 1px;
 }
 
 .toggle-bench-btn {
-
     margin-top: 4px;
-
     font-size: 10px;
 }
 .resize-handle {
@@ -622,65 +532,44 @@ body.dark-mode input {
 
 #drop-preview {
     position: absolute;
-
     display: none;
-
     pointer-events: none;
-
     background: rgba(0, 123, 255, 0.3);
-
     border: 2px solid #007bff;
-
     box-sizing: border-box;
-
     z-index: 5;
 }
 
 .bench-title {
-
     font-size: 14px;
     font-weight: bold;
 }
 
 .bench-cell {
-
     font-size: 12px;
     font-weight: normal;
 }
 
-
 .context-menu {
-
     position: fixed;
-
     display: none;
-
     min-width: 180px;
-
     background: #2b2b2b;
-
     border: 1px solid #555;
     border-radius: 8px;
-
     overflow: hidden;
-
     z-index: 99999;
-
     box-shadow:
         0 4px 10px rgba(0,0,0,.4);
 }
 
 .context-item {
-
     padding: 12px;
-
     cursor: pointer;
-
     color: white;
 }
 
 .context-item:hover {
-
     background: #3b82f6;
 }
 
@@ -707,3 +596,19 @@ body.dark-mode input {
 .benchType {
     width: 100%;
 }
+
+.status-pass {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.status-warning {
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.status-fail {
+    color: #ef4444;
+    font-weight: bold;
+}
+

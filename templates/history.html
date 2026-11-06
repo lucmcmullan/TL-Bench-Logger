@@ -18,6 +18,7 @@
                         <th>Status</th>
                         <th>Started By</th>
                         <th>Completed By</th>
+                        <th>Pass Rate</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -29,12 +30,26 @@
                         <td>{{ inspection_session.status }}</td>
                         <td>{{ inspection_session.initials }}</td>
                         <td>{{ inspection_session.completed_by or "-" }}</td>
+                        <td><span
+                                class="
+                                {% if session_stats[inspection_session.id].percentage >= 95 %}
+                                    status-pass
+                                {% elif session_stats[inspection_session.id].percentage >= 80 %}
+                                    status-warning
+                                {% else %}
+                                    status-fail
+                                {% endif %}
+                                "
+                            >
+                                {{ session_stats[inspection_session.id].percentage }}%
+                            </span>
+                        </td>
                         <td>
                             <div class="table-actions">
-                                <button class="btn-secondary" onclick="window.location.href='/history/{{ inspection_session.id }}'">View</button>
+                                <button class="btn-secondary" onclick="window.location.href='/history/{{ inspection_session.id }}/view'">View</button>
                                 
                                 {% if session.get("is_admin") %}
-                                <button type="button" class="btn-danger quick-delete-session" data-session-id="{{ inspection_session.id}}">Delete</button>
+                                    <button type="button" class="btn-danger quick-delete-session" data-session-id="{{ inspection_session.id}}">Delete</button>
                                 {% endif %}
                             </div>
                         </td>
