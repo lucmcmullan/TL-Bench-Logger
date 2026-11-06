@@ -40,20 +40,24 @@
                     height: {{ bench.height * 40 }}px;
                 ">
 
-                TB{{ bench.name }}
+                {% if bench.object_type == "testbench" %}
+                    TB{{ bench.name }}
+                {% else %}
+                    {{ bench.cell }}
+                {% endif %}
                 <br>
-                {% if bench.cell %}
-                    {% if bench.cell in ["Hi-Bar","Packing","Returns"] %}
-                        {{ bench.cell }}
-                    {% else %}
+                {% if bench.object_type == "testbench" and bench.cell %}
+                    {% if bench.cell.isdigit() %}
                         Cell {{ bench.cell }}
+                    {% else %}
+                        {{ bench.cell }}
                     {% endif %}
                 {% endif %}
             </button>
 
             {% endfor %}
 
-            </div>
+        </div>
 
         <div id="historyModal" class="modal">
             <div class="modal-content">

@@ -38,6 +38,8 @@ function closeModal() {
 
 document.querySelectorAll(".bench").forEach(button => {
     button.addEventListener("click", async () => {
+        if (button.dataset.objectType !== "testbench") return; 
+        
         if (button.dataset.active === "false") {
             document.getElementById("modalBenchTitle").innerText = `${button.innerText}\n(DISABLED)`;
             document.getElementById("disabledBenchMessage").style.display = "block";

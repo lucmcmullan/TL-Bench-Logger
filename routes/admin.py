@@ -18,6 +18,10 @@ from utils.audit import write_audit
 from utils.socketio_instance import socketio
 from routes.auth import login_required, admin_required
 
+import json
+with open("shared/enums.json", "r") as f:
+    ENUMS = json.load(f)
+    
 admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/admin/users")
@@ -119,7 +123,7 @@ def audit_log():
 @login_required
 @admin_required
 def bench_management():
-    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    active_session = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     return render_template("admin/benches.html", benches=Bench.query.all(), session_active=active_session is not None)
 
@@ -128,7 +132,7 @@ def bench_management():
 @login_required
 @admin_required
 def update_bench():
-    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    active_session = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     if active_session:
         return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403
@@ -163,6 +167,9 @@ def update_bench():
     if "cell" in data:
         bench.cell = data["cell"]
 
+    if "object_type" in data:
+            bench.object_type = data["object_type"]
+
     db.session.commit()
 
     write_audit(session["initials"], "UPDATE_BENCH", f"Updated {bench.name}")
@@ -172,7 +179,7 @@ def update_bench():
 
 @admin_bp.route("/admin/benches/delete", methods=["POST"])
 def delete_bench():
-    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    active_session = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     
     if active_session:
         return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403
@@ -191,7 +198,7 @@ def delete_bench():
 
 @admin_bp.route("/admin/benches/create", methods=["POST"])
 def create_bench():
-    active_session = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    active_session = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     
     if active_session:
         return jsonify(success=False, message=("Layout editing is disabled during an active session.")), 403

@@ -8,7 +8,11 @@ from flask import(
 )
 
 from datetime import datetime, timedelta, date
-from constants import DATE_FORMAT
+
+import json
+with open("shared/enums.json", "r") as f:
+    ENUMS = json.load(f)
+    
 from scripts.db import db
 from scripts.models import Bench, Inspection, InspectionSession, SessionUser, LayoutSnapshot
 from routes.auth import login_required
@@ -95,7 +99,7 @@ def dashboard():
         progress_percent=progress_percent,
         active_users=active_users,
         inspection_details={},
-        date=datetime.now().strftime(DATE_FORMAT)
+        date=datetime.now().strftime(ENUMS["Formatting"]["DATE_FORMAT"])
         )
 
 @session_bp.route("/complete-session", methods=["POST"])

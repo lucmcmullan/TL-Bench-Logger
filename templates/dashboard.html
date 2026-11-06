@@ -62,7 +62,8 @@
 
                 data-id="{{ bench.id }}"
                 data-active="{{ 'true' if bench.active else 'false' }}"
-
+                data-object-type="{{ bench.object_type }}"
+                
                 style="
                     left: {{ bench.x * 40 }}px;
                     top: {{ bench.y * 40 }}px;
@@ -70,15 +71,21 @@
                     height: {{ bench.height * 40 }}px;
                 ">
 
-                TB{{ bench.name }}
+                {% if bench.object_type == "testbench" %}
+                    TB{{ bench.name }}
+                {% else %}
+                    {{ bench.cell }}
+                {% endif %}
                 <br>
-                {% if bench.cell %}
-                    {% if bench.cell in no_cell_prefix or not bench.cell.isdigit() %}
-                        {{ bench.cell }}
-                    {% else %}
+                {% if bench.object_type == "testbench" and bench.cell %}
+                    {% if bench.cell.isdigit() %}
                         Cell {{ bench.cell }}
+                    {% else %}
+                        {{ bench.cell }}
                     {% endif %}
                 {% endif %}
+
+
             </button>
             {% endfor %}
 

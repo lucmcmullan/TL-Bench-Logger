@@ -1,18 +1,21 @@
 from datetime import datetime
 from scripts.db import db
-from constants import defaults
-
+import json
+with open("shared/enums.json", "r") as f:
+    ENUMS = json.load(f)
+    
 class Bench(db.Model):
     __tablename__ = "benches"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     cell = db.Column(db.String(50), nullable=True)
+    object_type = db.Column(db.String(50), nullable=False, default="testbench")
     x = db.Column(db.Integer, nullable=False)
     y = db.Column(db.Integer, nullable=False)
     width = db.Column(db.Integer, nullable=False, default=2)
     height = db.Column(db.Integer, nullable=False, default=1)
-    active = db.Column(db.Boolean, default=defaults["BenchActive"])
+    active = db.Column(db.Boolean, default=ENUMS["Defaults"]["BenchActive"])
     tested_by = db.Column(db.String(10), nullable=True)
     last_modified = db.Column(db.DateTime)
     inspections = db.relationship("Inspection", backref="bench", lazy=True)
@@ -32,7 +35,7 @@ class InspectionSession(db.Model):
     date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.now)
     end_time = db.Column(db.DateTime)
-    status = db.Column(db.String(20), default=defaults["InspectionSessionStatus"])
+    status = db.Column(db.String(20), default=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
     duration_seconds = db.Column(db.Integer)
     inspections = db.relationship("Inspection", backref="session", lazy=True)
     completed_by = db.Column(db.String(10), nullable=True)

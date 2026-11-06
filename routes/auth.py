@@ -24,8 +24,11 @@ import time
 import json
 import psutil
 from pathlib import Path
-
 from datetime import date, datetime
+
+import json
+with open("shared/enums.json", "r") as f:
+    ENUMS = json.load(f)
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -155,7 +158,7 @@ def change_password():
 def menu():
     completed_session = (InspectionSession.query.filter_by(date=date.today(), status="COMPLETED").first())
 
-    active_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
+    active_session = (InspectionSession.query.filter_by(date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     return render_template("menu.html", completed_session=completed_session, active_session=active_session)
 
@@ -167,10 +170,10 @@ def join_or_start_session():
     if completed_session:
         return "A session has already been completed today", 403
 
-    inspection_session = (InspectionSession.query.filter_by(date=date.today(), status="IN_PROGRESS").first())
+    inspection_session = (InspectionSession.query.filter_by(date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     if not inspection_session:
-        inspection_session = InspectionSession(initials=session["initials"], date=date.today(), status="IN_PROGRESS")
+        inspection_session = InspectionSession(initials=session["initials"], date=date.today(), status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"])
 
         db.session.add(inspection_session)
 

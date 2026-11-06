@@ -11,7 +11,9 @@ from routes.benches import bench_bp
 from routes.admin import admin_bp
 from routes.dev import dev_bp
 
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
 app = Flask(__name__)

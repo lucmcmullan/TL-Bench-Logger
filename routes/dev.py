@@ -7,6 +7,10 @@ from utils.backup import backup
 from scripts.models import *
 from utils.socketio_instance import socketio
 
+import json
+with open("shared/enums.json", "r") as f:
+    ENUMS = json.load(f)
+    
 dev_bp = Blueprint("dev", __name__)
 
 @dev_bp.route("/dev")
@@ -103,7 +107,7 @@ def test_routes():
 @login_required
 @developer_required
 def pass_all_benches():
-    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     if not current:
         return redirect("/dashboard")
 
@@ -146,7 +150,7 @@ def pass_all_benches():
 @login_required
 @developer_required
 def fail_all_benches():
-    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
     if not current:
         return redirect("/dashboard")
 
@@ -190,7 +194,7 @@ def fail_all_benches():
 @login_required
 @developer_required
 def reset_all_benches():
-    current = (InspectionSession.query.filter_by(status="IN_PROGRESS").first())
+    current = (InspectionSession.query.filter_by(status=ENUMS["InspectionSessionStatus"]["IN_PROGRESS"]).first())
 
     if not current:
         return redirect("/dashboard")

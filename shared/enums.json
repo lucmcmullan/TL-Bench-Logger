@@ -1,0 +1,23 @@
+{
+    "Defaults": {
+        "BenchActive": true,
+        "InspectionSessionStatus": "IN_PROGRESS"
+    },
+
+    "ObjectType": {
+        "BENCH": "testbench",
+        "STORES": "stores",
+        "NOBENCH": "cell_nobench"
+    },
+
+    "Formatting": {
+        "DATE_FORMAT": "%d/%m/%y",
+        "TIME_FORMAT": "%H:%M:%S"
+    },
+
+    "InspectionSessionStatus": {
+        "IN_PROGRESS": "In Progress",
+        "COMPLETED": "Completed",
+        "UNFINISHED": "Unfinished"
+    }
+}

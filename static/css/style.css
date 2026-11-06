@@ -547,18 +547,18 @@ body.dark-mode input {
 
 .layout-bench.inactive {
 
-    background: #555;
+    opacity: 0.45;
 
-    color: #ddd;
-
-    opacity: 0.7;
+    background: #5f5f5f;
 
     border: 3px dashed #999;
+
+    filter: grayscale(100%);
 }
 
 .layout-bench.inactive::after {
 
-    content: "DISABLED";
+    /*content: "DISABLED";*/
 
     position: absolute;
 

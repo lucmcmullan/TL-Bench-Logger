@@ -4,9 +4,12 @@ const editModal = document.getElementById("benchEditModal");
 const cellInput = document.getElementById("editBenchCell");
 const cellPrefix = document.getElementById("cellPrefix");
 
+const benchTypeSelect = document.getElementById("editBenchType");
+const tbNumberContainer = document.getElementById("tbNumberContainer");
+
 const GRID_SIZE = 40;
 const SESSION_ACTIVE = document.body.dataset.sessionActive === "true";
-
+        
 let draggedBench = null;
 let selectedBench = null;
 let dragOffsetX = 0;
@@ -14,6 +17,20 @@ let dragOffsetY = 0;
 
 let resizingBench = null;
 let resizeDirection = null;
+
+function updateObjectTypeUI() {
+    const objectType = benchTypeSelect.value;
+
+    if (objectType === "testbench") {
+        tbNumberContainer.style.display = "flex";
+        //document.getElementById("editBenchName").value = "";
+    } else {
+        tbNumberContainer.style.display = "none";
+        cellPrefix.style.display = "none"
+    }
+}
+
+benchTypeSelect.addEventListener("change", updateObjectTypeUI);
 
 function stopResize() {
     console.log("STOP RESIZE");
@@ -52,25 +69,26 @@ function updateCellPrefix() {
 document.getElementById("saveBenchEdit").addEventListener("click", () => {
     const benchId = document.getElementById("editBenchId").value;
 
-    saveBench(benchId,
-        {
-            name: document.getElementById("editBenchName").value,
-            cell: document.getElementById("editBenchCell").value,
-            active: document.getElementById("editBenchActive").checked
-        }
-    ).then(data => {
-        if (data.success) {
-            location.reload()
-        }
-    })
+    const payload = {
+        cell: document.getElementById("editBenchCell").value,
+        active: document.getElementById("editBenchActive").checked,
+        object_type: document.getElementById("editBenchType").value
+    };
 
+    if (payload.object_type === "testbench") {
+        payload.name = document.getElementById("editBenchName").value;
+    }
+
+    saveBench(benchId, payload).then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
 });
 
 document.getElementById("deleteBenchEdit").addEventListener("click", () => {
         if (!selectedBench)
             return;
-
-        const benchName = selectedBench.dataset.name || selectedBench.querySelector(".bench-title").textContent;
 
         fetch(
             "/admin/benches/delete",
@@ -148,8 +166,11 @@ document.querySelectorAll(".layout-bench").forEach(bench => {
 
         document.getElementById("editBenchId").value = bench.dataset.id;
         document.getElementById("editBenchName").value = bench.dataset.name || "";
-        document.getElementById("editBenchCell").value = bench.dataset.cell || ""; 
+        document.getElementById("editBenchCell").value = bench.dataset.cell || "";
+        document.getElementById("editBenchType").value = bench.dataset.objectType || "";
+        updateObjectTypeUI();
         updateCellPrefix();
+
         document.getElementById("editBenchActive").checked = bench.dataset.active === "true";
         editModal.style.display = "block";
     });
@@ -199,18 +220,19 @@ editor.addEventListener("drop", event => {
 
 
 cellInput.addEventListener("input", updateCellPrefix)
+
 function saveBench(benchId, data) {
     return fetch(
-        "/admin/benches/update", 
-        { method: "POST", headers: 
-            { "Content-Type": "application/json" },
-            body: JSON.stringify({bench_id: benchId, ...data })
+        "/admin/benches/update",
+        { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bench_id: benchId, ...data})
         }
-    ).then(response => response.json()).then(data => {
-        console.log("Bench updated:",data);
-    })
-}
+    ).then(response => response.json()).then(result => {
+        console.log("Bench updated:",result);
+        return result;
+    });
 
+}
 document.querySelectorAll(".resize-handle").forEach(handle => {
     handle.addEventListener("mousedown", e => {
         resizingBench = handle.closest(".layout-bench");

@@ -10,13 +10,13 @@
             <div class="modal-content">
                 <h2 id="editBenchTitle">Edit Bench</h2>
                 <input type="hidden" id="editBenchId">
-                <div class="input-prefix"><span>TB</span><input type="number" id="editBenchName" min="1"></div>
+                <div id="tbNumberContainer" class="input-prefix"><span>TB</span><input type="number" id="editBenchName" min="1"></div>
                 <div class="input-prefix"><span id="cellPrefix">Cell</span><input type="text" id="editBenchCell"></div>
                 <h3>Bench Type</h3>
                 <select id="editBenchType" class="benchType">
                     <option value="testbench">Test Bench</option>
-                    <option value="productionbench">Production Bench</option>
-                    <option value="packing">Packing</option>
+                    <option value="cell_nobench">Cell without TB</option>
+                    <option value="stores">Stores</option>
                 </select>
                 <h3>Status</h3>
                 <label><input type="checkbox" id="editBenchActive">Active</label>
@@ -49,13 +49,14 @@
                 {% for bench in benches %}
 
                 <div
-                    class="layout-bench bench pending"
+                    class="layout-bench bench pending {% if not bench.active %}inactive{% endif %}"
                     draggable="{{ 'false' if session_active else 'true' }}"
 
                     data-id="{{ bench.id }}"
                     data-name="{{ bench.name }}"
                     data-cell="{{ bench.cell or '' }}"
-                    data-active="{{ 'true' if bench.active else 'false' }}"
+                    data-object-type="{{ bench.object_type or 'testbench' }}"
+                    data-active="{{ 'true' if bench.active or bench.object_type != 'testbench' else 'false' }}"
 
                     data-x="{{ bench.x or 0 }}"
                     data-y="{{ bench.y or 0 }}"
@@ -70,14 +71,19 @@
                     "
                 >
 
-                    <div class="bench-title">TB{{ bench.name }}</div>
-
+                    <div class="bench-title">
+                        {% if bench.object_type == "testbench" %}
+                            TB{{ bench.name }}
+                        {% else %}
+                            {{ bench.cell }}
+                        {% endif %}
+                    </div>
                     <div class="bench-cell">
-                        {% if bench.cell %}
-                            {% if bench.cell in ["Packing", "Returns", "Hi-Bar"] %}
-                                {{ bench.cell }}
-                            {% else %}
+                        {% if bench.object_type == "testbench" and bench.cell %}
+                            {% if bench.cell.isdigit() %}
                                 Cell {{ bench.cell }}
+                            {% else %}
+                                {{ bench.cell }}
                             {% endif %}
                         {% endif %}
                     </div>
